@@ -5,28 +5,24 @@ apellido: Córdoba
 1° Parcial
 ---
 Enunciado:
-Se necesita realizar un programa para la administración de pacientes en una clínica privada que
-permita interactuar únicamente a través de la consola. El mismo deberá realizarse utilizando
-Python 3, aplicando los contenidos y reglas de estilo dados en esta cátedra.
+Se necesita realizar un programa para la administración de pacientes en una clínica privada que permita interactuar únicamente a través de la consola. 
+El mismo deberá realizarse utilizando Python 3, aplicando los contenidos y reglas de estilo dados en esta cátedra.
 Datos correspondientes de cada paciente:
 - ID (int)
 - Nombre (str)
 - Apellido (str)
 - Edad (int)
 - Altura (int) (en centímetros)
+- Peso (float) (en kilogramos)
+- DNI (int)
+- Grupo sanguíneo (str)
 
-1)
-Peso (float) (en kilogramos)
-DNI (int)
-Grupo sanguíneo (str)
-
-El programa debe contar con un menú como el siguiente:
+1) El programa debe contar con un menú como el siguiente:
 1. Dar de alta. Pedirá los datos necesarios y dará de alta a un nuevo paciente, asignando un ID único autoincremental. 
 2. Modificar. Permitirá alterar cualquier dato del paciente excepto su ID. Se usará el DNI para identificar al paciente a modificar. 
 Mostrará un submenú para seleccionar qué datos modificar. Deberá indicarse si se realizaron modificaciones (y cuáles) o no.
 3. Eliminar. Eliminará permanentemente a un paciente del listado original. Se pedirá el DNI del paciente a eliminar.
-4. Mostrar todos.
-Imprimirá por consola la información de todos los pacientes en formato de tabla:
+4. Mostrar todos. Imprimirá por consola la información de todos los pacientes en formato de tabla:
 *****************************************************************************************
 | Nombre | Apellido | Edad | Altura | Peso | DNI | Grupo sanguíneo |
 —------------------------------------------------------------------------------------------------
@@ -83,11 +79,8 @@ from os import system
 from Pacientes import *
 from Inputs import *
 
-def __init__(self):
-    self.lista_de_pacientes = []
-
 def mostrar_opciones_pacientes():
-    return(
+    return (
         "\nMenú de gestión de Pacientes: \n"
         "1. Dar de alta paciente. \n"
         "2. Modificar paciente. \n"
@@ -98,44 +91,46 @@ def mostrar_opciones_pacientes():
         "7. Calcular promedio. \n"
         "8. Salir. \n"
     )
-    
 
-def menu_principal():
+def menu_principal(enfermero):
+    enfermero = Enfermero()
+    enfermero.leer_CSV("Pacientes.csv")
+    altas = []
     while True:
         system("cls")
         print(mostrar_opciones_pacientes())
-        opcion = ("Silecciona una opción: ")
+        opcion = input("Selecciona una opción: ")
         match opcion:
             case "1":
-                pass
+                enfermero.ingreso_pacientes()
             case "2":
-                nombre = nombre_valido("Ingrese el nombre del paciente: ", 3, 20)
-                apellido = nombre_valido("Ingrese el apellido del paciente: ", 3, 20)
-                edad = edad_valido("Ingrese la edad del paciente: ")
-                altura = altura_valido("Ingrese la altura del paciente: ")
-                peso = peso_valido("Ingrese el peso del paciente: ")
-                dni = dni_valido("Ingrese el dni del paciente: ")
-                grupo_sanguineo = grupo_sanguineo_valido("Ingrese el grupo sanguineo del paciente: ")
-                Enfermero.modificar_pacientes(nombre, apellido, edad, altura, peso, dni, grupo_sanguineo)
+                dni = iden_valido("Ingrese el DNI del paciente a modificar: ")
+                paciente = enfermero.buscar_DNI(dni)
+                if paciente:
+                    enfermero.ingreso_pacientes(modificar=True, dni=dni)
+                else:
+                    print("Paciente no encontrado.")
             case "3":
-                Enfermero.eliminar_pacientes()
+                dni = iden_valido("Ingrese el DNI del paciente a eliminar: ")
+                enfermero.eliminar_paciente(dni)
             case "4":
-                Enfermero.mostrar_todosLos_pacientes()
+                enfermero.mostrar_todosLos_pacientes()
             case "5":
-                Enfermero.Ordenar()
+                enfermero.Ordenar()
             case "6":
-                dni = dni_valido("Ingrese el dni del paciente: ")
-                print(Enfermero.buscar_pacientes(dni))
+                dni = iden_valido("Ingrese el DNI del paciente a buscar: ")
+                print(enfermero.buscar_DNI(dni))
             case "7":
                 tipo = input("Ingrese el tipo de promedio a calcular (edad, altura, peso): ")
-                print(Enfermero.promedio(tipo))
+                print(enfermero.promedio(tipo))
             case "8":
-                print("Saliendo del programa. \n")
-                break
+                print("Saliendo del programa.")
+                return
             case _:
-                print("Opción no valida. Intentalo de nuevo. \n")
-                
+                print("Opción no válida. Inténtalo de nuevo.")
         system("pause")
         system("cls")
-    
-menu_principal()
+
+if __name__ == "__main__":
+    enfermero = Enfermero()
+    menu_principal(enfermero)
