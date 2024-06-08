@@ -80,6 +80,9 @@ from Pacientes import *
 from Inputs import *
 
 def mostrar_opciones_pacientes():
+    """
+    Muestra las opciones del menú de gestión de pacientes.  
+    """
     return (
         "\nMenú de gestión de Pacientes: \n"
         "1. Dar de alta paciente. \n"
@@ -93,9 +96,12 @@ def mostrar_opciones_pacientes():
     )
 
 def menu_principal(enfermero):
+    """
+    Muestra el menú principal del programa. Llama a las funciones correspondientes.
+    Y leer el archivo de pacientes. Con los system para que quede más bonito.
+    """
     enfermero = Enfermero()
     enfermero.leer_CSV("Pacientes.csv")
-    altas = []
     while True:
         system("cls")
         print(mostrar_opciones_pacientes())
@@ -124,7 +130,9 @@ def menu_principal(enfermero):
                 tipo = input("Ingrese el tipo de promedio a calcular (edad, altura, peso): ")
                 print(enfermero.promedio(tipo))
             case "8":
-                print("Saliendo del programa.")
+                enfermero.guardar_CSV()
+                enfermero.escribir_JSON()
+                enfermero.salir()
                 return
             case _:
                 print("Opción no válida. Inténtalo de nuevo.")
@@ -132,5 +140,8 @@ def menu_principal(enfermero):
         system("cls")
 
 if __name__ == "__main__":
+    """
+    Llamada al programa principal.
+    """
     enfermero = Enfermero()
     menu_principal(enfermero)

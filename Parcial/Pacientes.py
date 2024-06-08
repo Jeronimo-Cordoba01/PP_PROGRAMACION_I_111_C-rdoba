@@ -3,6 +3,9 @@ from Inputs import *
 from os import system
 
 class Pacientes:
+    """
+    Clase Paciente. Cada instancia de esta clase representa un paciente. Y tiene los siguientes atributos:
+    """
     def __init__(self, iden: int, nombre: str, apellido: str, edad: int, altura: int, peso: float, dni: int, grupo_sanguineo: str):
         self.iden = iden
         self.nombre = nombre
@@ -19,21 +22,28 @@ class Pacientes:
     
 class Enfermero:
     def __init__(self):
+        """
+        Crea una instancia de la clase Enfermero. Crea una lista vacía de Pacientes. Y lee el archivo CSV de Pacientes.
+        """
         self.lista_pacientes = []
+        self.leer_CSV("Pacientes.csv")
 
     def ingreso_pacientes(self):
+        """
+        Ingresa un nuevo paciente. Valida que los datos sean correctos llamando desde "Inputs.py" a las funciones correspondientes.
+        """
         
         iden = iden_valido("Ingrese el identificador del paciente: ")
         if not iden:
             print("Identificador inválido. Operación cancelada.")
             return
         
-        nombre = nombre_apellido_valido("Ingrese el nombre del paciente: ", 3, 20)
+        nombre = nombre_apellido_valido("Ingrese el nombre del paciente: ", 3, 20).strip(" ")
         if not nombre:
             print("Nombre inválido. Operación cancelada.")
             return
 
-        apellido = nombre_apellido_valido("Ingrese el apellido del paciente: ", 3, 20)
+        apellido = nombre_apellido_valido("Ingrese el apellido del paciente: ", 3, 20).strip(" ")
         if not apellido:
             print("Apellido inválido. Operación cancelada.")
             return
@@ -67,10 +77,24 @@ class Enfermero:
             return
 
         paciente = Pacientes(iden, nombre, apellido, edad, altura, peso, dni, grupo_sanguineo)
+        """
+        Agrega el paciente a la lista de Pacientes.
+        """
         self.lista_pacientes.append(paciente)
         print("Paciente ingresado correctamente.")
+        
+        self.escribir_JSON()
+        """
+        Crea un archivo JSON con la lista de Pacientes.
+        """
 
     def generar_identificador(self) -> int:
+        """
+        Genera un identificador para un nuevo paciente.
+
+        Returns:
+            int: El identificador generado.
+        """
         id_autoincremental = 0
         for paciente in self.lista_pacientes:
             if paciente.iden > id_autoincremental:
@@ -78,79 +102,30 @@ class Enfermero:
         return id_autoincremental + 1
 
     def buscar_DNI(self, dni):
+        """
+        Busca un paciente por su DNI.
+
+        Args:
+            dni (int): El DNI a buscar.
+
+        Returns:
+            Pacientes: El paciente encontrado o None si no se encuentra.
+        """
         for paciente in self.lista_pacientes:
             if paciente.dni == dni:
                 return paciente
         return None
-        
-#1. Dar de alta. Pedira los datos necesarios y dará de alta a un nuevo paciente, asignando un ID autoincremental.
-    def dar_alta(self) -> bool:
-        id_autoincremental = self.generar_identificador()
-        
-        dni = dni_valido("Ingrese el DNI del paciente: ")
-        for paciente in self.lista_pacientes:
-            if paciente.dni == dni:
-                print("El paciente ya está registrado.")
-                return False
-        
-        alta()
-        
-        match input("Opción: ").strip():
-            case "1":
-                self.ingreso_pacientes(id_autoincremental)
-                return True
-            case "2":
-                print("No se realizó el alta del paciente.")
-                return False
-            case _:
-                print("Opción inválida.")
-                return False
-#2. Modificar. Permitira alterar cualquier dato del paciente excepto su ID. Se usará el DNI para identificar al paciente a modificar
-    def modificar_paciente(self):
-        dni = dni_valido("Ingrese el DNI del paciente a modificar: ")
-
-        for paciente in self.lista_pacientes:
-            if paciente.dni == dni:
-                print("Datos actuales del paciente:")
-                print(paciente)
-                
-                if seguro():
-                    datos_anteriores = paciente.__dict__.copy()
-                    self.ingreso_pacientes()
-                    print("Paciente modificado correctamente.")
-                    
-                    if seguro():
-                        paciente.__dict__ = datos_anteriores
-                        print("Modificación deshecha. Datos restaurados.")
-                    else:
-                        print("Modificación confirmada.")
-                else:
-                    print("Modificación cancelada.")
-                return
-        
-        print("No se encontró ningún paciente con el DNI proporcionado.")
-#3. Eliminar. Eliminará permanentemente a un paciente del listado original. Se pedira el DNI del paciente a eliminar.            
-    def eliminar_paciente(self):
-        dni = dni_valido("Ingrese el DNI del paciente a eliminar: ")
-        for paciente in self.lista_pacientes:
-            if paciente.dni == dni:
-                paciente_temporal = paciente
-
-                self.lista_pacientes.remove(paciente)
-                print("Paciente eliminado correctamente.")
-                
-                if seguro():
-                    print("Paciente eliminado correctamente.")
-                    return
-                else:
-                    self.lista_pacientes.append(paciente_temporal)
-                    print("Eliminación cancelada. El paciente ha sido restaurado.")
-                    return
-        print("Paciente no encontrado.")
-        
-#4. Mostrar todos los pacientes.            
 #Aca lee el CSV
     def leer_CSV(self, path: str = "Pacientes.csv") -> list:
+        """
+        Lee el archivo CSV de Pacientes. Intenta abrir el archivo. Si no se encuentra, imprime un mensaje de error.
+
+        Args:
+            path (str, optional): Ruta del archivo CSV. Defaults to "Pacientes.csv".
+
+        Returns:
+            list: Lista de objetos Pacientes.
+        """
         ruta_absoluta = os.path.join(os.path.dirname(__file__), path)
         lista_pacientes = []
         try:
@@ -177,8 +152,103 @@ class Enfermero:
         except csv.Error as e:
             print(f"Error al leer el archivo CSV: {e}")
         return lista_pacientes
-    
+        
+#1. Dar de alta. Pedira los datos necesarios y dará de alta a un nuevo paciente, asignando un ID autoincremental.
+    def dar_alta(self) -> bool:
+        """
+        Dar de alta un nuevo paciente.
+
+        Returns:
+            bool: True si se dio de alta o False si no se dio de alta.
+        """
+        id_autoincremental = self.generar_identificador()
+        
+        dni = dni_valido("Ingrese el DNI del paciente: ")
+        for paciente in self.lista_pacientes:
+            if paciente.dni == dni:
+                print("El paciente ya está registrado.")
+                return False
+        
+        alta()
+        
+        match input("Opción: ").strip():
+            case "1":
+                self.ingreso_pacientes(id_autoincremental)
+                return True
+            case "2":
+                print("No se realizó el alta del paciente.")
+                return False
+            case _:
+                print("Opción inválida.")
+                return False
+#2. Modificar. Permitira alterar cualquier dato del paciente excepto su ID. Se usará el DNI para identificar al paciente a modificar
+    def modificar_paciente(self):
+        dni = dni_valido("Ingrese el DNI del paciente a modificar: ")
+        """
+        Busca el paciente por su DNI para modificarlo.
+        """
+
+        for paciente in self.lista_pacientes:
+            if paciente.dni == dni:
+                print("Datos actuales del paciente:")
+                print(paciente)
+                
+                if seguro():
+                    print("Ingrese los nuevos datos del paciente:")
+                    nombre = nombre_apellido_valido("Ingrese el nombre del paciente: ", 3, 20).strip(" ")
+                    apellido = nombre_apellido_valido("Ingrese el apellido del paciente: ", 3, 20).strip(" ")
+                    edad = edad_valido("Ingrese la edad del paciente: ")
+                    altura = altura_valido("Ingrese la altura del paciente: ")
+                    peso = peso_valido("Ingrese el peso del paciente: ")
+                    grupo_sanguineo = grupo_sanguineo_valido("Ingrese el grupo sanguíneo del paciente: ")
+                    
+                    paciente.nombre = nombre
+                    paciente.apellido = apellido
+                    paciente.edad = edad
+                    paciente.altura = altura
+                    paciente.peso = peso
+                    paciente.grupo_sanguineo = grupo_sanguineo
+                    
+                    print("Paciente modificado correctamente.")
+                    
+                    if seguro():
+                        print("Modificación confirmada.")
+                    else:
+                        print("Modificación deshecha. Datos restaurados.")
+                else:
+                    print("Modificación cancelada.")
+                return
+            
+        print("No se encontró ningún paciente con el DNI proporcionado.")
+#3. Eliminar. Eliminará permanentemente a un paciente del listado original. Se pedira el DNI del paciente a eliminar.            
+    def eliminar_paciente(self):
+        """
+        Elimina un paciente por su DNI. Sino lo encuentra, muestra un mensaje de error. Y ingresa al archivo JSON
+        """
+        dni = dni_valido("Ingrese el DNI del paciente a eliminar: ")
+        paciente_encontrado = False
+        
+        for paciente in self.lista_pacientes:
+            if paciente.dni == dni:
+                paciente_encontrado = True
+                confirmacion = seguro("¿Está seguro que desea eliminar al paciente? (s/n): ")
+                if confirmacion:
+                    self.lista_pacientes.remove(paciente)
+                    print("Paciente eliminado correctamente.")
+                    self.eliminar_JSON(paciente.iden) 
+                    break
+                else:
+                    print("Eliminación cancelada. El paciente no se ha eliminado.")
+                break
+        
+        if not paciente_encontrado:
+            print("Paciente no encontrado.")
+        
+#4. Mostrar todos los pacientes.                
     def mostrar_todosLos_pacientes(self):
+        """
+        Muestra todos los pacientes de la lista. Lleyendo el archivo CSV.
+        """
         pacientes = self.leer_CSV("Pacientes.csv")
         if not pacientes:
             print("No hay pacientes para mostrar")
@@ -192,6 +262,10 @@ class Enfermero:
         
 #5. Ordenar pacientes. Ofrecer la opción de ordenar y mostrar la lista de pacientes de forma ascendente o descendente por: 
     def Ordenar(self):
+        """
+        Usamos el metodo Bubble Sort para ordenar la lista de pacientes. Y usamos un menu para elegir el criterio de ordenamiento.
+        Ya sea por nombre, apellido, altura o grupo sanguineo con el parametro ascendente o descendente.
+        """
         def bubble_sort(arr, key, ascendente=True):
             n = len(arr)
             for i in range(n - 1):
@@ -214,8 +288,8 @@ class Enfermero:
                     print("Opción no válida")
 
         orden = menu_ordenar()
-        asc = input("Orden ascendente (s/n): ").strip().capitalize() == 'S'
-        des = input("Orden descendente (s/n): ").strip().capitalize() == 'S'
+        asc = input("Orden ascendente (s/n): ").strip(" ").capitalize() == 'S'
+        des = input("Orden descendente (s/n): ").strip(" ").capitalize() == 'S'
         if asc and des:
             print("No se puede seleccionar ascendente y descendente al mismo tiempo.")
             return
@@ -244,6 +318,15 @@ class Enfermero:
     
 #6. Buscar paciente por DNI: Permitir al usuario buscar y mostrar la información de un paciente específico ingresando su DNI.
     def buscar_DNI(self, dni: int):
+        """
+        Busca un paciente por su DNI. Leyendo el archivo CSV. 
+
+        Args:
+            dni (int): DNI del paciente. 
+
+        Returns:
+            Pacientes: El paciente encontrado o None si no se encuentra.
+        """
         for paciente in self.lista_pacientes:
             if paciente.dni == dni:
                 print("*****************************************************************************************")
@@ -251,7 +334,7 @@ class Enfermero:
                 print("—------------------------------------------------------------------------------------------------")
                 print(f"| {paciente.nombre} | {paciente.apellido} | {paciente.edad} | {paciente.altura} cm | {paciente.peso} kg | {paciente.dni} | {paciente.grupo_sanguineo} |")
                 print("*****************************************************************************************")
-                if seguro():
+                if seguro("¿Desea continuar con esta búsqueda? (s/n): "):
                     return paciente
                 else:
                     print("Búsqueda cancelada.")
@@ -261,6 +344,17 @@ class Enfermero:
     
 #7 calcular promedio: Mostrar un submenú que permita calcular y mostrar el promedio de:
     def promedio(self, tipo: str):
+        """
+        Calcula el promedio de una variable. Usando la clase Paciente. Y llenando el archivo CSV. 
+        Intenta la variable. Si no se encuentra, imprime un mensaje de error.
+
+        Args:
+            tipo (str): Verifico que la variable sea la correcta. Y hace la operación correspondiente.
+
+        Returns:
+            El promedio de la variable.
+        """
+        self.leer_CSV("Pacientes.csv")
         if not self.lista_pacientes:
             print("No hay pacientes en la lista para calcular el promedio.")
             return None
@@ -269,20 +363,23 @@ class Enfermero:
         enfermos = len(self.lista_pacientes)
 
         try:
-            if tipo == "edad":
-                for paciente in self.lista_pacientes:
-                    total += paciente.edad
-            elif tipo == "altura":
-                for paciente in self.lista_pacientes:
-                    total += paciente.altura
-            elif tipo == "peso":
-                for paciente in self.lista_pacientes:
-                    total += paciente.peso
-            else:
-                print("Criterio no válido")
-                return None
+            match tipo:
+                case "edad":
+                    for paciente in self.lista_pacientes:
+                        total += paciente.edad
+                case "altura":
+                    for paciente in self.lista_pacientes:
+                        total += paciente.altura
+                case "peso":
+                    for paciente in self.lista_pacientes:
+                        total += paciente.peso
+                case _:
+                    print("Criterio no válido")
+                    return None
 
-            return total / enfermos
+            resultado = total / enfermos
+            print(f"El promedio de {tipo} es: {resultado}")
+
         except AttributeError as e:
             print(f"Error al acceder a los atributos de los pacientes: {e}")
             return None
@@ -290,11 +387,20 @@ class Enfermero:
         
 #8. Salir. Terminará la ejecución del programa.
     def salir(self):
+        """
+        Terminará la ejecución del programa. Usando la clase Paciente. Y llenando el archivo CSV.
+        """
         print("Gracias por usar el sistema. ¡Hasta pronto!")
         return
         
 #Guarda la lista de objetos en el CSV
     def guardar_CSV(self, path: str = "Pacientes.csv"):
+        """
+        Guarda la lista de objetos en el archivo CSV.
+
+        Args:
+            Usa el path para guardar el archivo CSV. Y revisa linea por linea.
+        """
         ruta_absoluta = os.path.join(os.path.dirname(__file__), path)
         try:
             with open(ruta_absoluta, "w", newline='', encoding="utf8") as archivo:
@@ -312,6 +418,13 @@ class Enfermero:
                 
 #Escribe la lista de objetos en el CSV
     def escribir_CSV(self, path: str, paciente: Pacientes):
+        """
+        Escribe la lista de objetos en el archivo CSV.
+
+        Args:
+            path (str): Ruta del archivo CSV. Usando "join" para concatenar. Y direname para crear el archivo.
+            paciente (Pacientes): Objeto Paciente.
+        """
         ruta_absoluta = os.path.join(os.path.dirname(__file__), path)
         try:
             with open(ruta_absoluta, "a", newline='', encoding="utf8") as archivo:
@@ -322,3 +435,51 @@ class Enfermero:
             print(f"No se encontró el archivo: {ruta_absoluta}")
         except IOError as e:
             print(f"Error al escribir en el archivo: {e}")
+            
+#Dar de alta en JSON
+    def escribir_JSON(self):
+        """
+        Escribe la lista de objetos en el archivo JSON.
+        """
+        pacientes_alta = []
+        for paciente in self.lista_pacientes:
+            paciente_info = {
+                "ID": paciente.iden,
+                "Nombre": paciente.nombre,
+                "Apellido": paciente.apellido,
+                "Edad": paciente.edad,
+                "Altura": paciente.altura,
+                "Peso": paciente.peso,
+                "DNI": paciente.dni,
+                "Grupo_sanguineo": paciente.grupo_sanguineo
+            }
+            pacientes_alta.append(paciente_info)
+
+        with open("Alta.json", "w") as json_file:
+            json.dump(pacientes_alta, json_file, indent=4)
+            
+#Eliminar en JSON
+    def eliminar_JSON(self, iden: int):
+        """
+        Elimina el objeto del archivo JSON.
+
+        Args:
+            iden (int): Se busca el ID para eliminar al paciente
+        """
+        pacientes_muertos = []
+        for paciente in self.lista_pacientes:
+            if paciente.iden != iden:
+                paciente_info = {
+                    "ID": paciente.iden,
+                    "Nombre": paciente.nombre,
+                    "Apellido": paciente.apellido,
+                    "Edad": paciente.edad,
+                    "Altura": paciente.altura,
+                    "Peso": paciente.peso,
+                    "DNI": paciente.dni,
+                    "Grupo_sanguineo": paciente.grupo_sanguineo
+                }
+                pacientes_muertos.append(paciente_info)
+
+        with open("Eliminados.json", "w") as json_file:
+            json.dump(pacientes_muertos, json_file, indent=4)
