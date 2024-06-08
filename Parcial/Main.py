@@ -48,7 +48,7 @@ Todos los ingresos de datos por consola deberán estar validados.
 La altura no podrá ser menor a 30 ni mayor a 230.
 ● El peso deberá estar compuesto únicamente por valores numéricos y puntos, al tratarse de un flotante. No podrá ser menor a 10 ni mayor a 300.
 ● El DNI deberá estar compuesto exactamente por 8 caracteres numéricos.(Ej: Si se ingresa el DNI 345, deberá guardarse 00000345.) 
-No podrá ser menor a 4000000 ni mayor a 99999999.
+No podrá ser menor a 4000000 ni mayor a 99999999. ¿La consigna no se contradice?
 ● El grupo sanguíneo deberá estar compuesto únicamente por el indicador A, B, AB o 0 con su correspondiente símbolo + o -.
 Primera parte:
     El estudiante deberá presentarse el día del parcial con el programa completo y funcionando.

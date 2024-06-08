@@ -1,4 +1,4 @@
-import csv, json, random, datetime
+import csv, json, random, datetime, os
 from Inputs import *
 from os import system
 
@@ -22,7 +22,12 @@ class Enfermero:
         self.lista_pacientes = []
 
     def ingreso_pacientes(self):
-        iden = self.generar_identificador() 
+        
+        iden = iden_valido("Ingrese el identificador del paciente: ")
+        if not iden:
+            print("Identificador inválido. Operación cancelada.")
+            return
+        
         nombre = nombre_apellido_valido("Ingrese el nombre del paciente: ", 3, 20)
         if not nombre:
             print("Nombre inválido. Operación cancelada.")
@@ -100,55 +105,77 @@ class Enfermero:
             case _:
                 print("Opción inválida.")
                 return False
-#2. Modificar. Permitira alterar cualquier dato del paciente excepto su ID. Se usará el DNI para identificar al paciente a modificar.        
+#2. Modificar. Permitira alterar cualquier dato del paciente excepto su ID. Se usará el DNI para identificar al paciente a modificar
     def modificar_paciente(self):
         dni = dni_valido("Ingrese el DNI del paciente a modificar: ")
-        
+
         for paciente in self.lista_pacientes:
             if paciente.dni == dni:
                 print("Datos actuales del paciente:")
                 print(paciente)
                 
-                self.ingreso_pacientes()
-                
-                print("Paciente modificado correctamente.")
+                if seguro():
+                    datos_anteriores = paciente.__dict__.copy()
+                    self.ingreso_pacientes()
+                    print("Paciente modificado correctamente.")
+                    
+                    if seguro():
+                        paciente.__dict__ = datos_anteriores
+                        print("Modificación deshecha. Datos restaurados.")
+                    else:
+                        print("Modificación confirmada.")
+                else:
+                    print("Modificación cancelada.")
                 return
-            
+        
         print("No se encontró ningún paciente con el DNI proporcionado.")
 #3. Eliminar. Eliminará permanentemente a un paciente del listado original. Se pedira el DNI del paciente a eliminar.            
     def eliminar_paciente(self):
         dni = dni_valido("Ingrese el DNI del paciente a eliminar: ")
         for paciente in self.lista_pacientes:
             if paciente.dni == dni:
+                paciente_temporal = paciente
+
                 self.lista_pacientes.remove(paciente)
                 print("Paciente eliminado correctamente.")
-                return
+                
+                if seguro():
+                    print("Paciente eliminado correctamente.")
+                    return
+                else:
+                    self.lista_pacientes.append(paciente_temporal)
+                    print("Eliminación cancelada. El paciente ha sido restaurado.")
+                    return
         print("Paciente no encontrado.")
         
 #4. Mostrar todos los pacientes.            
 #Aca lee el CSV
-    def leer_CSV(self, path: str) -> list:
+    def leer_CSV(self, path: str = "Pacientes.csv") -> list:
+        ruta_absoluta = os.path.join(os.path.dirname(__file__), path)
         lista_pacientes = []
         try:
-            with open(path, "r", encoding="utf8") as archivo:
+            with open(ruta_absoluta, "r", encoding="utf8") as archivo:
                 lector = csv.reader(archivo)
-                next(lector) 
+                next(lector)
                 for campos in lector:
-                    paciente = Pacientes(
-                        iden=int(campos[0]),
-                        nombre=campos[1],
-                        apellido=campos[2],
-                        edad=int(campos[3]),
-                        altura=int(campos[4]),
-                        peso=float(campos[5]),
-                        dni=int(campos[6]),
-                        grupo_sanguineo=campos[7]
-                    )
-                    lista_pacientes.append(paciente)
+                    try:
+                        paciente = Pacientes(
+                            iden=int(campos[0]),
+                            nombre=campos[1],
+                            apellido=campos[2],
+                            edad=int(campos[3]),
+                            altura=int(campos[4]),
+                            peso=float(campos[5]),
+                            dni=int(campos[6]),
+                            grupo_sanguineo=campos[7]
+                        )
+                        lista_pacientes.append(paciente)
+                    except (IndexError, ValueError) as e:
+                        print(f"Error al procesar la línea {lector.line_num}: {e}")
         except FileNotFoundError:
-            print(f"No se encontró el archivo: {path}")
-        except Exception as e:
-            print(f"Ocurrió un error al leer el archivo: {e}")
+            print(f"No se encontró el archivo: {ruta_absoluta}")
+        except csv.Error as e:
+            print(f"Error al leer el archivo CSV: {e}")
         return lista_pacientes
     
     def mostrar_todosLos_pacientes(self):
@@ -164,27 +191,28 @@ class Enfermero:
         print("*****************************************************************************************")
         
 #5. Ordenar pacientes. Ofrecer la opción de ordenar y mostrar la lista de pacientes de forma ascendente o descendente por: 
-    def bubble_sort(self, arr, key, ascendente=True):
-        n = len(arr)
-        for i in range(n - 1):
-            for j in range(0, n - i - 1):
-                if ascendente:
-                    if arr[j].__dict__[key] > arr[j + 1].__dict__[key]:
-                        arr[j], arr[j + 1] = arr[j + 1], arr[j]
-                else:
-                    if arr[j].__dict__[key] < arr[j + 1].__dict__[key]:
-                        arr[j], arr[j + 1] = arr[j + 1], arr[j]
-
-    def ordenar_por(self, tipo: str, ascendente: bool = True):
-        if tipo == "nombre" or tipo == "apellido" or tipo == "altura" or tipo == "grupo_sanguineo":
-            try:
-                self.bubble_sort(self.lista_pacientes, tipo, ascendente)
-            except AttributeError as e:
-                print(f"Error en la ordenación: {e}")
-        else:
-            print("Opción no válida")
-
     def Ordenar(self):
+        def bubble_sort(arr, key, ascendente=True):
+            n = len(arr)
+            for i in range(n - 1):
+                for j in range(0, n - i - 1):
+                    if ascendente:
+                        if arr[j].__dict__[key] > arr[j + 1].__dict__[key]:
+                            arr[j], arr[j + 1] = arr[j + 1], arr[j]
+                    else:
+                        if arr[j].__dict__[key] < arr[j + 1].__dict__[key]:
+                            arr[j], arr[j + 1] = arr[j + 1], arr[j]
+
+        def ordenar_por(tipo: str, ascendente: bool = True):
+            match tipo:
+                case "nombre", "apellido", "altura", "grupo_sanguineo":
+                    try:
+                        bubble_sort(self.lista_pacientes, tipo, ascendente)
+                    except AttributeError as e:
+                        print(f"Error en la ordenación: {e}")
+                case _:
+                    print("Opción no válida")
+
         orden = menu_ordenar()
         asc = input("Orden ascendente (s/n): ").strip().capitalize() == 'S'
         des = input("Orden descendente (s/n): ").strip().capitalize() == 'S'
@@ -198,18 +226,18 @@ class Enfermero:
             ascendente = False
             descendente = True
         else:
-            print("Debes seleccionar al menos ascendente o descendente.")
+            print("Debes seleccionar ascendente o descendente.")
             return
 
         match orden:
             case "1":
-                self.ordenar_por("nombre", ascendente=ascendente)
+                ordenar_por("nombre", ascendente=ascendente)
             case "2":
-                self.ordenar_por("apellido", ascendente=ascendente)
+                ordenar_por("apellido", ascendente=ascendente)
             case "3":
-                self.ordenar_por("altura", ascendente=ascendente)
+                ordenar_por("altura", ascendente=ascendente)
             case "4":
-                self.ordenar_por("grupo_sanguineo", ascendente=ascendente)
+                ordenar_por("grupo_sanguineo", ascendente=ascendente)
             case _:
                 print("Opción no válida")
                 
@@ -223,29 +251,41 @@ class Enfermero:
                 print("—------------------------------------------------------------------------------------------------")
                 print(f"| {paciente.nombre} | {paciente.apellido} | {paciente.edad} | {paciente.altura} cm | {paciente.peso} kg | {paciente.dni} | {paciente.grupo_sanguineo} |")
                 print("*****************************************************************************************")
-                return paciente
-        return "Pacienteente no encontrado"
+                if seguro():
+                    return paciente
+                else:
+                    print("Búsqueda cancelada.")
+                    return None
+        print("Paciente no encontrado.")
+        return None
     
 #7 calcular promedio: Mostrar un submenú que permita calcular y mostrar el promedio de:
     def promedio(self, tipo: str):
-        total = 0; enfermos = len(self.lista_pacientes)
+        if not self.lista_pacientes:
+            print("No hay pacientes en la lista para calcular el promedio.")
+            return None
 
-        match tipo:
-            case "edad":
+        total = 0
+        enfermos = len(self.lista_pacientes)
+
+        try:
+            if tipo == "edad":
                 for paciente in self.lista_pacientes:
                     total += paciente.edad
-                return total / enfermos
-            case "altura":
+            elif tipo == "altura":
                 for paciente in self.lista_pacientes:
                     total += paciente.altura
-                return total / enfermos
-            case "peso":
+            elif tipo == "peso":
                 for paciente in self.lista_pacientes:
                     total += paciente.peso
-                return total / enfermos
-            case _:
+            else:
                 print("Criterio no válido")
-                return
+                return None
+
+            return total / enfermos
+        except AttributeError as e:
+            print(f"Error al acceder a los atributos de los pacientes: {e}")
+            return None
         
         
 #8. Salir. Terminará la ejecución del programa.
@@ -253,26 +293,32 @@ class Enfermero:
         print("Gracias por usar el sistema. ¡Hasta pronto!")
         return
         
-        
 #Guarda la lista de objetos en el CSV
-    def guardar_CSV(self, path: str):
-            try:
-                with open(path, "w", encoding="utf8") as archivo:
-                    escritor = csv.writer(archivo)
-                    escritor.writerow(["ID", "Nombre", "Apellido", "Edad", "Altura", "Peso", "DNI", "Grupo Sanguíneo"])
-                    for paciente in self.lista_pacientes:
-                        escritor.writerow([paciente.iden, paciente.nombre, paciente.apellido, paciente.edad, paciente.altura,
-                                        paciente.peso, paciente.dni, paciente.grupo_sanguineo])
-                print("Datos guardados correctamente en el archivo CSV.")
-            except Exception as e:
-                print(f"Error al guardar los datos en el archivo CSV: {e}")
+    def guardar_CSV(self, path: str = "Pacientes.csv"):
+        ruta_absoluta = os.path.join(os.path.dirname(__file__), path)
+        try:
+            with open(ruta_absoluta, "w", newline='', encoding="utf8") as archivo:
+                escritor = csv.writer(archivo)
+                escritor.writerow(["ID", "Nombre", "Apellido", "Edad", "Altura", "Peso", "DNI", "Grupo_sanguineo"])
+                for paciente in self.lista_pacientes:
+                    escritor.writerow([
+                        paciente.id, paciente.nombre, paciente.apellido,
+                        paciente.edad, paciente.altura, paciente.peso,
+                        paciente.dni, paciente.grupo_sanguineo])
+        except FileNotFoundError:
+            print(f"No se encontró el archivo: {ruta_absoluta}")
+        except csv.Error as e:
+            print(f"Error al escribir en el archivo: {e}")
                 
 #Escribe la lista de objetos en el CSV
     def escribir_CSV(self, path: str, paciente: Pacientes):
+        ruta_absoluta = os.path.join(os.path.dirname(__file__), path)
         try:
-            with open(path, "a") as archivo:
+            with open(ruta_absoluta, "a", newline='', encoding="utf8") as archivo:
                 escritor = csv.writer(archivo)
                 escritor.writerow([paciente.iden, paciente.nombre, paciente.apellido, paciente.edad, paciente.altura, paciente.peso, paciente.dni, 
-                                paciente.grupo_sanguineo])
+                                    paciente.grupo_sanguineo])
         except FileNotFoundError:
-            print("No se encontró el archivo")
+            print(f"No se encontró el archivo: {ruta_absoluta}")
+        except IOError as e:
+            print(f"Error al escribir en el archivo: {e}")

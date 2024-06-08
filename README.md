@@ -3,6 +3,7 @@
 
 ## :point_right: Estudiante :point_left:
 - Nombre: Jerónimo F.L. Córdoba
+- DNI: 43.083.726
 - Division: 111-1
 
 ## :skull: 1° Parcial - Programación I :skull:
