@@ -5,6 +5,8 @@ from os import system
 class Pacientes:
     """
     Clase Paciente. Cada instancia de esta clase representa un paciente. Y tiene los siguientes atributos:
+    identificador (Iden = Entero), nombre (Nombre = String), apellido (Apellido = String), edad (Edad = Entero), altura (Altura = Entero), 
+    peso (Peso = Flotante), dni (DNI = Entero), grupo_sanguineo (Grupo_sanguineo = String)
     """
     def __init__(self, iden: int, nombre: str, apellido: str, edad: int, altura: int, peso: float, dni: int, grupo_sanguineo: str):
         self.iden = iden
@@ -21,16 +23,19 @@ class Pacientes:
     
     
 class Enfermero:
+    """
+    Creo la clase Enfermero donde esta todas la funciones que el programa solicita al usuario. Llamando las validaciones de Inputs.py. 
+    Luego, crea una lista vacía de Pacientes. Y lee el archivo CSV de Pacientes. Y luego genera un identificador para un nuevo paciente.
+    Luego, agrega el paciente a la lista de Pacientes. Y despues cumplen el resto de las consignas 
+    """
     def __init__(self):
-        """
-        Crea una instancia de la clase Enfermero. Crea una lista vacía de Pacientes. Y lee el archivo CSV de Pacientes.
-        """
         self.lista_pacientes = []
         self.leer_CSV("Pacientes.csv")
 
     def ingreso_pacientes(self):
         """
-        Ingresa un nuevo paciente. Valida que los datos sean correctos llamando desde "Inputs.py" a las funciones correspondientes.
+        Ingresa un nuevo paciente. Valida que los datos sean correctos llamando desde "Inputs.py" a las funciones correspondientes. 
+        Luego, agrega el paciente a la lista de Pacientes. Si el paciente ya existe, imprime un mensaje de error. 
         """
         
         iden = iden_valido("Ingrese el identificador del paciente: ")
@@ -38,12 +43,12 @@ class Enfermero:
             print("Identificador inválido. Operación cancelada.")
             return
         
-        nombre = nombre_apellido_valido("Ingrese el nombre del paciente: ", 3, 20).strip(" ")
+        nombre = nombre_apellido_valido("Ingrese el nombre del paciente: ", 3, 20)
         if not nombre:
             print("Nombre inválido. Operación cancelada.")
             return
 
-        apellido = nombre_apellido_valido("Ingrese el apellido del paciente: ", 3, 20).strip(" ")
+        apellido = nombre_apellido_valido("Ingrese el apellido del paciente: ", 3, 20)
         if not apellido:
             print("Apellido inválido. Operación cancelada.")
             return
@@ -77,9 +82,11 @@ class Enfermero:
             return
 
         paciente = Pacientes(iden, nombre, apellido, edad, altura, peso, dni, grupo_sanguineo)
+        
         """
-        Agrega el paciente a la lista de Pacientes.
+        Crea un nuevo Paciente con los datos ingresados. Luego, agrega el Paciente a la lista de Pacientes. 
         """
+        
         self.lista_pacientes.append(paciente)
         print("Paciente ingresado correctamente.")
         
@@ -171,7 +178,7 @@ class Enfermero:
         
         alta()
         
-        match input("Opción: ").strip():
+        match input("Opción: ").strip(".", "-", " "):
             case "1":
                 self.ingreso_pacientes(id_autoincremental)
                 return True
@@ -195,8 +202,8 @@ class Enfermero:
                 
                 if seguro():
                     print("Ingrese los nuevos datos del paciente:")
-                    nombre = nombre_apellido_valido("Ingrese el nombre del paciente: ", 3, 20).strip(" ")
-                    apellido = nombre_apellido_valido("Ingrese el apellido del paciente: ", 3, 20).strip(" ")
+                    nombre = nombre_apellido_valido("Ingrese el nombre del paciente: ", 3, 20)
+                    apellido = nombre_apellido_valido("Ingrese el apellido del paciente: ", 3, 20)
                     edad = edad_valido("Ingrese la edad del paciente: ")
                     altura = altura_valido("Ingrese la altura del paciente: ")
                     peso = peso_valido("Ingrese el peso del paciente: ")
@@ -257,25 +264,31 @@ class Enfermero:
         print("| Nombre | Apellido | Edad | Altura | Peso | DNI | Grupo sanguíneo |")
         print("—------------------------------------------------------------------------------------------------")
         for paciente in pacientes:
-            print(f"| {paciente.nombre} | {paciente.apellido} | {paciente.edad} | {paciente.altura} cm | {paciente.peso} kg | {paciente.dni} | {paciente.grupo_sanguineo} |")
+            print(f"|{paciente.iden}| {paciente.nombre} | {paciente.apellido} | {paciente.edad} | {paciente.altura} cm | {paciente.peso} kg | {paciente.dni} | {paciente.grupo_sanguineo} |")
         print("*****************************************************************************************")
         
 #5. Ordenar pacientes. Ofrecer la opción de ordenar y mostrar la lista de pacientes de forma ascendente o descendente por: 
     def Ordenar(self):
         """
-        Usamos el metodo Bubble Sort para ordenar la lista de pacientes. Y usamos un menu para elegir el criterio de ordenamiento.
-        Ya sea por nombre, apellido, altura o grupo sanguineo con el parametro ascendente o descendente.
+        Primero usamos el metodo "Bubble sort" para ordenar la lista de pacientes.
+        Luego, usamos el metodo "Menu" para mostrar la lista de ordenamiento.
+        Luego, usamos el metodo "Ordenar por" para ordenar la lista de pacientes de forma ascendente o descendente.
+        Por se ordena por la opción que el usuario elija.
         """
-        def bubble_sort(arr, key, ascendente=True):
-            n = len(arr)
+        def bubble_sort(pacientes, key, ascendente=True):
+            n = len(pacientes)
             for i in range(n - 1):
-                for j in range(0, n - i - 1):
+                for j in range(n - i - 1):
                     if ascendente:
-                        if arr[j].__dict__[key] > arr[j + 1].__dict__[key]:
-                            arr[j], arr[j + 1] = arr[j + 1], arr[j]
+                        if pacientes[j].__dict__[key] > pacientes[j + 1].__dict__[key]:
+                            orden = pacientes[j]
+                            pacientes[j] = pacientes[j + 1]
+                            pacientes[j + 1] = orden
                     else:
-                        if arr[j].__dict__[key] < arr[j + 1].__dict__[key]:
-                            arr[j], arr[j + 1] = arr[j + 1], arr[j]
+                        if pacientes[j].__dict__[key] < pacientes[j + 1].__dict__[key]:
+                            orden = pacientes[j]
+                            pacientes[j] = pacientes[j + 1]
+                            pacientes[j + 1] = orden
 
         def ordenar_por(tipo: str, ascendente: bool = True):
             match tipo:
@@ -290,6 +303,10 @@ class Enfermero:
         orden = menu_ordenar()
         asc = input("Orden ascendente (s/n): ").strip(" ").capitalize() == 'S'
         des = input("Orden descendente (s/n): ").strip(" ").capitalize() == 'S'
+        """
+        No se me ocurrio como hacerlo de otra manera, por eso pongo ascendente y descendente en True y False. Me gustaría poner 
+        Si elegís una no aparece la otra pero no se como 
+        """
         if asc and des:
             print("No se puede seleccionar ascendente y descendente al mismo tiempo.")
             return
@@ -390,6 +407,7 @@ class Enfermero:
         """
         Terminará la ejecución del programa. Usando la clase Paciente. Y llenando el archivo CSV.
         """
+        
         print("Gracias por usar el sistema. ¡Hasta pronto!")
         return
         
@@ -402,9 +420,21 @@ class Enfermero:
             Usa el path para guardar el archivo CSV. Y revisa linea por linea.
         """
         ruta_absoluta = os.path.join(os.path.dirname(__file__), path)
+        """
+        En la "ruta_absoluta" uso el "os" para concatenar. Con el "join" para concatenar. 
+        Y con el "os.path.dirname(__file__)" para que me traiga la ruta del archivo. 
+        Con el "path" para que me traiga la ruta del archivo.
+        """
         try:
             with open(ruta_absoluta, "w", newline='', encoding="utf8") as archivo:
+                """
+                El "w" es para escribir. El "newline" es para que no me genere un salto de linea. 
+                El "encoding" es para que me acepte caracteres especiales.
+                """
                 escritor = csv.writer(archivo)
+                """
+                El "writer" es para escribir. El "writerow" es para escribir una sola vez.
+                """
                 escritor.writerow(["ID", "Nombre", "Apellido", "Edad", "Altura", "Peso", "DNI", "Grupo_sanguineo"])
                 for paciente in self.lista_pacientes:
                     escritor.writerow([
@@ -428,6 +458,10 @@ class Enfermero:
         ruta_absoluta = os.path.join(os.path.dirname(__file__), path)
         try:
             with open(ruta_absoluta, "a", newline='', encoding="utf8") as archivo:
+                """
+                El "a" es para agregar. El "newline" es para que no me genere un salto de linea. 
+                El "encoding" es para que me acepte caracteres especiales.
+                """
                 escritor = csv.writer(archivo)
                 escritor.writerow([paciente.iden, paciente.nombre, paciente.apellido, paciente.edad, paciente.altura, paciente.peso, paciente.dni, 
                                     paciente.grupo_sanguineo])
@@ -457,6 +491,10 @@ class Enfermero:
 
         with open("Alta.json", "w") as json_file:
             json.dump(pacientes_alta, json_file, indent=4)
+            
+        """
+        El "w" es para escribir. El "json.dump" es para escribir. Y el indent=4 es para que me genere una identación.
+        """
             
 #Eliminar en JSON
     def eliminar_JSON(self, iden: int):
