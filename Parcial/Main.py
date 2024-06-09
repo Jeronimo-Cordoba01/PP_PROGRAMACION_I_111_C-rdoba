@@ -97,8 +97,27 @@ def mostrar_opciones_pacientes():
 
 def menu_principal(enfermero):
     """
-    Muestra el menú principal del programa. Llama a las funciones correspondientes.
-    Y leer el archivo de pacientes. Con los system para que quede más bonito.
+    Descripción:
+    Implementa el menú principal del programa para la gestión de pacientes. Permite al usuario seleccionar diversas acciones 
+    relacionadas con la gestión de pacientes.
+
+    Arrays:
+    - enfermero: Objeto de la clase Enfermero utilizado para llamar a funciones relacionadas con la gestión de pacientes.
+
+    Returns:
+    No devuelve ningún valor. Se encarga de mostrar el menú y ejecutar las acciones seleccionadas por el usuario.
+
+    Uso:
+    Llamar al inicio del programa para presentar al usuario las opciones disponibles y manejar la interacción principal 
+    del usuario con el sistema de gestión de pacientes.
+
+    Consideraciones:
+    - Utiliza un bucle infinito para mantener el programa en ejecución hasta que el usuario decida salir.
+    - Muestra el menú de opciones disponibles y maneja la entrada del usuario para determinar la acción a realizar.
+    - Llama a métodos del objeto `enfermero` para realizar acciones como ingresar, modificar o eliminar pacientes, 
+    mostrar la lista de pacientes, ordenarlos, buscar por DNI, calcular promedios, guardar datos en archivos CSV y JSON, 
+    o salir del programa.
+    - Después de ejecutar cada acción, limpia la pantalla y pausa la ejecución para que el usuario pueda ver los resultados.
     """
     enfermero = Enfermero()
     enfermero.leer_CSV("Pacientes.csv")
@@ -110,7 +129,7 @@ def menu_principal(enfermero):
             case "1":
                 enfermero.ingreso_pacientes()
             case "2":
-                dni = iden_valido("Ingrese el DNI del paciente a modificar: ")
+                dni = dni_valido("Ingrese el DNI del paciente a modificar: ")
                 paciente = enfermero.buscar_DNI(dni)
                 if paciente:
                     enfermero.ingreso_pacientes(modificar=True, dni=dni)
