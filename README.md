@@ -3,7 +3,22 @@
 
 ## :point_right: Estudiante :point_left:
 - Nombre: Jerónimo F.L. Córdoba
-- DNI: 43.083.726
 - Division: 111-1
 
 ## :skull: 1° Parcial - Programación I :skull:
+## :memo: Menu sobre los pacientes :memo:
+![](Menu.png)
+
+## :book: Descripción :book: ##
+En el parcial nos tenemos que hacer cargo de la gestión de la clinica VIDDA
+donde el usuario interactua con nuestro sistema
+
+## :notebook: Funciones :notebook:##
+ - Dar de alta pacientes
+ - Modificar los datos teniendo en cuenta el DNI
+ - Eliminar el pacientes y agregarlo a la lista de eliminados 
+ - Mostrar todos los pacientes
+ - Ordenar los pacientes segun la elección 
+ - Buscar un pacientes por el DNI
+ - Calcular el promedio segun la elección
+ - Salir del programa

@@ -43,12 +43,12 @@ class Enfermero:
             print("Identificador inválido. Operación cancelada.")
             return
         
-        nombre = nombre_apellido_valido("Ingrese el nombre del paciente: ", 3, 20)
+        nombre = nombre_apellido_valido("Ingrese el nombre del paciente: ", 3, 20).capitalize()
         if not nombre:
             print("Nombre inválido. Operación cancelada.")
             return
 
-        apellido = nombre_apellido_valido("Ingrese el apellido del paciente: ", 3, 20)
+        apellido = nombre_apellido_valido("Ingrese el apellido del paciente: ", 3, 20).capitalize()
         if not apellido:
             print("Apellido inválido. Operación cancelada.")
             return
@@ -82,7 +82,6 @@ class Enfermero:
             return
 
         paciente = Pacientes(iden, nombre, apellido, edad, altura, peso, dni, grupo_sanguineo)
-        
         """
         Crea un nuevo Paciente con los datos ingresados. Luego, agrega el Paciente a la lista de Pacientes. 
         """
