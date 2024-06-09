@@ -117,14 +117,14 @@ def menu_principal(enfermero):
                 else:
                     print("Paciente no encontrado.")
             case "3":
-                dni = iden_valido("Ingrese el DNI del paciente a eliminar: ")
+                dni = dni_valido("Ingrese el DNI del paciente a eliminar: ")
                 enfermero.eliminar_paciente(dni)
             case "4":
                 enfermero.mostrar_todosLos_pacientes()
             case "5":
                 enfermero.Ordenar()
             case "6":
-                dni = iden_valido("Ingrese el DNI del paciente a buscar: ")
+                dni = dni_valido("Ingrese el DNI del paciente a buscar: ")
                 print(enfermero.buscar_DNI(dni))
             case "7":
                 tipo = input("Ingrese el tipo de promedio a calcular (edad, altura, peso): ")

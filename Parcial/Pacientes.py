@@ -350,7 +350,7 @@ class Enfermero:
                 print("*****************************************************************************************")
                 print("| Nombre | Apellido | Edad | Altura | Peso | DNI | Grupo sanguíneo |")
                 print("—------------------------------------------------------------------------------------------------")
-                print(f"| {paciente.nombre} | {paciente.apellido} | {paciente.edad} | {paciente.altura} cm | {paciente.peso} kg | {paciente.dni} | {paciente.grupo_sanguineo} |")
+                print(f"|{paciente.iden}| {paciente.nombre} | {paciente.apellido} | {paciente.edad} | {paciente.altura} cm | {paciente.peso} kg | {paciente.dni} | {paciente.grupo_sanguineo} |")
                 print("*****************************************************************************************")
                 if seguro("¿Desea continuar con esta búsqueda? (s/n): "):
                     return paciente
