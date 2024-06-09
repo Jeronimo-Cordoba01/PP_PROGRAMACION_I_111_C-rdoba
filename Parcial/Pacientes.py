@@ -269,11 +269,10 @@ class Enfermero:
 #5. Ordenar pacientes. Ofrecer la opción de ordenar y mostrar la lista de pacientes de forma ascendente o descendente por: 
     def Ordenar(self):
         """
-        Primero usamos el metodo "Bubble sort" para ordenar la lista de pacientes.
-        Luego, usamos el metodo "Menu" para mostrar la lista de ordenamiento.
-        Luego, usamos el metodo "Ordenar por" para ordenar la lista de pacientes de forma ascendente o descendente.
-        Por se ordena por la opción que el usuario elija.
+        Ofrecer la opción de ordenar y mostrar la lista de pacientes de forma ascendente o descendente por
+        nombre, apellido, altura, o grupo sanguíneo.
         """
+
         def bubble_sort(pacientes, key, ascendente=True):
             n = len(pacientes)
             for i in range(n - 1):
@@ -291,46 +290,49 @@ class Enfermero:
 
         def ordenar_por(tipo: str, ascendente: bool = True):
             match tipo:
-                case "nombre", "apellido", "altura", "grupo_sanguineo":
+                case "nombre" | "apellido" | "altura" | "grupo_sanguineo":
                     try:
                         bubble_sort(self.lista_pacientes, tipo, ascendente)
+                        print(f"Pacientes ordenados por {tipo} de forma {'ascendente' if ascendente else 'descendente'}.")
                     except AttributeError as e:
                         print(f"Error en la ordenación: {e}")
                 case _:
                     print("Opción no válida")
 
+        def menu_ordenar():
+            print("Opciones de ordenamiento:")
+            print("1. Ordenar por nombre")
+            print("2. Ordenar por apellido")
+            print("3. Ordenar por altura")
+            print("4. Ordenar por grupo sanguíneo")
+            return input("Selecciona una opción de ordenamiento: ")
+
         orden = menu_ordenar()
-        asc = input("Orden ascendente (s/n): ").strip(" ").capitalize() == 'S'
-        des = input("Orden descendente (s/n): ").strip(" ").capitalize() == 'S'
-        """
-        No se me ocurrio como hacerlo de otra manera, por eso pongo ascendente y descendente en True y False. Me gustaría poner 
-        Si elegís una no aparece la otra pero no se como 
-        """
-        if asc and des:
+        asc = input("Orden ascendente (s/n): ").strip().lower() == 's'
+        desc = input("Orden descendente (s/n): ").strip().lower() == 's'
+
+        if asc and desc:
             print("No se puede seleccionar ascendente y descendente al mismo tiempo.")
             return
         if asc:
             ascendente = True
-            descendente = False
-        elif des:
+        elif desc:
             ascendente = False
-            descendente = True
         else:
             print("Debes seleccionar ascendente o descendente.")
             return
 
         match orden:
             case "1":
-                ordenar_por("nombre", ascendente=ascendente)
+                ordenar_por("nombre", ascendente)
             case "2":
-                ordenar_por("apellido", ascendente=ascendente)
+                ordenar_por("apellido", ascendente)
             case "3":
-                ordenar_por("altura", ascendente=ascendente)
+                ordenar_por("altura", ascendente)
             case "4":
-                ordenar_por("grupo_sanguineo", ascendente=ascendente)
+                ordenar_por("grupo_sanguineo", ascendente)
             case _:
                 print("Opción no válida")
-                
     
 #6. Buscar paciente por DNI: Permitir al usuario buscar y mostrar la información de un paciente específico ingresando su DNI.
     def buscar_DNI(self, dni: int):
