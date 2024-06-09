@@ -13,7 +13,7 @@
 En el parcial nos tenemos que hacer cargo de la gestión de la clinica VIDDA
 donde el usuario interactua con nuestro sistema
 
-## :notebook: Funciones :notebook:##
+## :notebook: Funciones :notebook: ##
  - Dar de alta pacientes
  - Modificar los datos teniendo en cuenta el DNI
  - Eliminar el pacientes y agregarlo a la lista de eliminados 
