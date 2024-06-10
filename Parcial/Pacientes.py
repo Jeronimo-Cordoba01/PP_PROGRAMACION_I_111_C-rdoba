@@ -205,8 +205,7 @@ class Enfermero:
             print("Datos actuales del paciente:")
             print(paciente)
                 
-            seguro()
-            opcion = input("Opción: ").strip()
+            opcion = input("Opción:  1. Modificar.  2. Cancelar.").strip()
             if opcion == "1":
                 print("Ingrese los nuevos datos del paciente:")
                 nombre = nombre_apellido_valida("Ingrese el nombre del paciente: ", 3, 20).capitalize()
@@ -224,7 +223,7 @@ class Enfermero:
                 paciente.grupo_sanguineo = grupo_sanguineo
                 
                 print("Paciente modificado correctamente.")
-            else:
+            elif opcion == "2":
                 print("Modificación cancelada.")
         else:
             print("No se encontró ningún paciente con el DNI proporcionado.")
@@ -242,13 +241,12 @@ class Enfermero:
         paciente = self.buscar_DNI(dni)
         
         if paciente:
-            seguro()
-            opcion = input("Opción: ").strip()
+            opcion = input("Opción:  1. Eliminar.  2. Cancelar.").strip()
             if opcion == "1":
                 self.lista_pacientes.remove(paciente)
                 print("Paciente eliminado correctamente.")
                 self.eliminar_JSON(paciente.iden)
-            else:
+            elif opcion == "2":
                 print("Eliminación cancelada.")
         else:
             print("Paciente no encontrado.")
