@@ -1,5 +1,7 @@
 def iden_valido(mensaje):
     """
+    Esta función valida un identificador ingresado por el usuario. El identificador debe ser un número entre 1 y 9999.
+    Si se cumple los 3 intentos fallidos, la función retorna None. Y regresa al menu principal.
     Identificador valido.
     •	La función iden_valido valida un identificador numérico ingresado por el usuario.
     •	Se permite un máximo de 3 intentos para ingresar un número válido entre 1 y 9999.
@@ -7,6 +9,10 @@ def iden_valido(mensaje):
     •	Verifica que la entrada sea un dígito (isdigit) y esté dentro del rango permitido.
     •	Si el usuario ingresa un identificador válido, la función retorna el valor como un entero.
     •	Si se exceden los 3 intentos, se imprime un mensaje de error y se retorna None.
+    Args:
+        mensaje (str): El mensaje a mostrar al usuario para solicitar el identificador.
+    Returns:
+        int or None: El identificador validado como un entero si es válido, None si se excedieron los intentos.
     """
     reintentos = 0
     while reintentos < 3:
@@ -20,6 +26,12 @@ def iden_valido(mensaje):
 
 def nombre_apellido_valido(mensaje, minimo, maximo):
     """
+    Esta función valida un nombre o apellido ingresado por el usuario. Verifica que se ingrese un texto alfabético.
+    Si se cumple los 3 intentos fallidos, la función retorna None. Y regresa al menu principal.
+    Args:
+        mensaje (str): El mensaje a mostrar al usuario para solicitar el nombre o apellido.
+        minimo (int): El número minimo de caracteres permitidos.
+        maximo (int): El número maximo de caracteres permitidos.
     Nombre y Apellido valido.
     •	La función nombre_apellido_valido valida un nombre o apellido ingresado por el usuario.
     •	Permite un máximo de 3 intentos para ingresar un texto alfabético con una longitud entre minimo y maximo.
@@ -27,6 +39,8 @@ def nombre_apellido_valido(mensaje, minimo, maximo):
     •	Verifica que la longitud del texto esté dentro del rango permitido y que sea alfabético (isalpha).
     •	Si el usuario ingresa un nombre o apellido válido, la función retorna el texto.
     •	Si se exceden los 3 intentos, se imprime un mensaje de error y se retorna None.
+    Returns:
+        str or None: El nombre o apellido validado como una cadena si es válida, None si se excedieron los intentos.
     """
     reintentos = 0
     while reintentos < 3:
@@ -40,6 +54,12 @@ def nombre_apellido_valido(mensaje, minimo, maximo):
 
 def edad_valido(mensaje):
     """
+    Esta función valida una edad ingresada por el usuario. Verifica que se ingrese un número entre 1 y 120.
+    Si se cumple los 3 intentos fallidos, la función retorna None. Y regresa al menu principal.
+    Args:
+        mensaje (str): El mensaje a mostrar al usuario para solicitar la edad.
+    Returns:
+        int or None: La edad validada como un entero si es válida, None si se excedieron los intentos.
     Validación de una edad.
     •	La función edad_valido valida una edad ingresada por el usuario.
     •	Permite un máximo de 3 intentos para ingresar un número entre 1 y 120.
@@ -60,6 +80,12 @@ def edad_valido(mensaje):
 
 def altura_valido(mensaje):
     """
+    Esta función valida una altura ingresada por el usuario. Verifica que se ingrese un número entre 30 y 230 centimetros.
+    Si se cumple los 3 intentos fallidos, la función retorna None. Y regresa al menu principal.
+    Args:
+        mensaje (str): El mensaje a mostrar al usuario para solicitar la altura.
+    Returns:
+        int or None: La altura validada como un entero si es válida, None si se excedieron los intentos.
     Validación de una altura.
     •	La función altura_valido valida una altura ingresada por el usuario.
     •	Permite un máximo de 3 intentos para ingresar un número entre 30 y 230 centímetros.
@@ -80,6 +106,12 @@ def altura_valido(mensaje):
 
 def peso_valido(mensaje):
     """
+    Esta función valida un peso ingresado por el usuario. Verifica que se ingrese un número entre 10 y 300 kilogramos.
+    Si se cumple los 3 intentos fallidos, la función retorna None. Y regresa al menu principal.
+    Args:
+        mensaje (str): El mensaje a mostrar al usuario para solicitar el peso.
+    Returns:
+        float or None: El peso validado como un entero si es válido, None si se excedieron los intentos.
     Validación de un peso.
     •	La función peso_valido valida un peso ingresado por el usuario.
     •	Permite un máximo de 3 intentos para ingresar un número entre 10 y 300 kilogramos.
@@ -100,6 +132,10 @@ def peso_valido(mensaje):
 
 def dni_valido(mensaje):
     """
+    Esta función valida un DNI ingresado por el usuario. Verifica que se ingrese un número de 8 cifras.
+    Si se cumple los 3 intentos fallidos, la función retorna None. Y regresa al menu principal.
+    Args:
+        mensaje (str): El mensaje a mostrar al usuario para solicitar el DNI.
     Validación de un DNI.
     •	La función dni_valido valida un DNI ingresado por el usuario.
     •	Permite un máximo de 3 intentos para ingresar un número de 8 dígitos entre 4000000 y 99999999.
@@ -107,7 +143,8 @@ def dni_valido(mensaje):
     •	Verifica que la entrada sea un dígito (isdigit), que tenga 8 caracteres y esté dentro del rango permitido.
     •	Si el usuario ingresa un DNI válido, la función retorna el valor como un entero.
     •	Si se exceden los 3 intentos, se imprime un mensaje de error y se retorna None.
-
+    Returns:
+        int or None: El DNI validado como un entero si es válido, None si se excedieron los intentos.
     """
     reintentos = 0
     while reintentos < 3:
@@ -121,6 +158,13 @@ def dni_valido(mensaje):
 
 def grupo_sanguineo_valido(mensaje):
     """
+    Esta función valida un grupo sanguineo ingresado por el usuario.
+    Verifica que se ingrese uno de los siguientes valores: A+, A-, B+, B-, AB+, AB-, O+, O-.
+    Si se cumple los 3 intentos fallidos, la función retorna None. Y regresa al menu principal.
+    Args:
+        mensaje (str): El mensaje a mostrar al usuario para solicitar el grupo sanguineo.
+    Returns:
+        Un mensaje de error o None si el grupo sanguineo es válido.
     Validación de un grupo sanguíneo.
     •	La función grupo_sanguineo_valido valida un grupo sanguíneo ingresado por el usuario.
     •	Permite un máximo de 3 intentos para ingresar uno de los valores válidos: A+, A-, B+, B-, AB+, AB-, O+, O-.
@@ -140,7 +184,6 @@ def grupo_sanguineo_valido(mensaje):
     print("Demasiados intentos fallidos.")
     return None
 
-
 def alta():
     """
     Este es un sub-menu para dar de alta un paciente.
@@ -148,7 +191,7 @@ def alta():
     print("¿Quiere dar de alta un paciente?")
     print("1. Si")
     print("2. No")
-
+    
 def seguro():
     """
     Este es un sub-menu para confirmar una accion.
@@ -156,7 +199,7 @@ def seguro():
     print("¿Seguro?")
     print("1. Si")
     print("2. No")
-
+    
 def menu_ordenar():
     """
     Este es un sub-menu para ordenar los datos de un paciente.

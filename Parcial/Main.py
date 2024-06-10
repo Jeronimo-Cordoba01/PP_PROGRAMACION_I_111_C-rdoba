@@ -132,7 +132,7 @@ def menu_principal(enfermero):
                 dni = dni_valido("Ingrese el DNI del paciente a modificar: ")
                 paciente = enfermero.buscar_DNI(dni)
                 if paciente:
-                    enfermero.ingreso_pacientes(modificar=True, dni=dni)
+                    enfermero.modificar_paciente(dni)
                 else:
                     print("Paciente no encontrado.")
             case "3":
