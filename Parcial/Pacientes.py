@@ -40,7 +40,9 @@ class Pacientes:
     
 class Enfermero:
     """
-    La clase Enfermero contiene métodos para administrar pacientes, como ingresar nuevos pacientes, buscar pacientes por DNI, modificar información de pacientes, eliminar pacientes, mostrar información de pacientes y realizar otras operaciones relacionadas con pacientes.
+    La clase Enfermero contiene métodos para administrar pacientes, como ingresar nuevos pacientes, buscar pacientes por DNI, 
+    modificar información de pacientes, eliminar pacientes, mostrar información de pacientes 
+    y realizar otras operaciones relacionadas con pacientes.
     Constructor (__init__):
     •	Acciones:
         o	Inicializa la lista de pacientes vacía.
@@ -504,11 +506,29 @@ class Enfermero:
         """
         try:
             with open("Alta.json", "w", encoding="utf-8", newline='') as file:
-                json.dump([paciente.__dict__ for paciente in self.lista_pacientes], file, indent=4)
+                lista_pacientes_dict = []
+                
+                for paciente in self.lista_pacientes:
+                    paciente_dict = {
+                        "iden": paciente.iden,
+                        "nombre": paciente.nombre,
+                        "apellido": paciente.apellido,
+                        "edad": paciente.edad,
+                        "altura": paciente.altura,
+                        "peso": paciente.peso,
+                        "dni": paciente.dni,
+                        "grupo_sanguineo": paciente.grupo_sanguineo
+                    }
+                    lista_pacientes_dict.append(paciente_dict)
+                
+                json.dump(lista_pacientes_dict, file, indent=4)
+            
             print("Datos guardados correctamente en el archivo JSON.")
+        
         except IOError:
             print("No se pudo guardar el archivo Alta.json.")
-
+            
+            
     #Eliminar en JSON
     def eliminar_JSON(self, id_paciente: int):
         """
