@@ -62,8 +62,8 @@ class Enfermero:
     •	Otros métodos no incluidos en la sección de código proporcionada podrían incluir operaciones como modificar pacientes, eliminar pacientes, mostrar todos los pacientes y realizar otras operaciones relacionadas con pacientes.
 
     """
-    def __init__(self):
-        self.lista_pacientes = []
+    def __init__(self, lista_pacientes: list[dict]):
+        self.lista_pacientes = lista_pacientes 
         self.leer_CSV("Pacientes.csv")
 
     def ingreso_pacientes(self):
@@ -72,59 +72,52 @@ class Enfermero:
         Luego, agrega el paciente a la lista de Pacientes. Si el paciente ya existe, imprime un mensaje de error. 
         """
         
-        iden = iden_valido("Ingrese el identificador del paciente: ")
+        iden = iden_valida("Ingrese el identificador del paciente: ")
         if not iden:
             print("Identificador inválido. Operación cancelada.")
             return
         
-        nombre = nombre_apellido_valido("Ingrese el nombre del paciente: ", 3, 20).capitalize()
+        nombre = nombre_apellido_valida("Ingrese el nombre del paciente: ", 3, 20).capitalize()
         if not nombre:
             print("Nombre inválido. Operación cancelada.")
             return
 
-        apellido = nombre_apellido_valido("Ingrese el apellido del paciente: ", 3, 20).capitalize()
+        apellido = nombre_apellido_valida("Ingrese el apellido del paciente: ", 3, 20).capitalize()
         if not apellido:
             print("Apellido inválido. Operación cancelada.")
             return
 
-        edad = edad_valido("Ingrese la edad del paciente: ")
+        edad = edad_valida("Ingrese la edad del paciente: ")
         if not edad:
             print("Edad inválida. Operación cancelada.")
             return
 
-        altura = altura_valido("Ingrese la altura del paciente: ")
+        altura = altura_valida("Ingrese la altura del paciente: ")
         if not altura:
             print("Altura inválida. Operación cancelada.")
             return
 
-        peso = peso_valido("Ingrese el peso del paciente: ")
+        peso = peso_valida("Ingrese el peso del paciente: ")
         if not peso:
             print("Peso inválido. Operación cancelada.")
             return
 
-        dni = dni_valido("Ingrese el dni del paciente: ")
+        dni = dni_valida("Ingrese el dni del paciente: ")
         if not dni:
             print("DNI inválido. Operación cancelada.")
             return
-        if self.buscar_DNI(dni):
-            print("El DNI ya está registrado. Operación cancelada.")
-            return
 
-        grupo_sanguineo = grupo_sanguineo_valido("Ingrese el grupo sanguíneo del paciente: ")
+        grupo_sanguineo = grupo_sanguineo_valida("Ingrese el grupo sanguíneo del paciente: ")
         if not grupo_sanguineo:
             print("Grupo sanguíneo inválido. Operación cancelada.")
             return
 
         paciente = Pacientes(iden, nombre, apellido, edad, altura, peso, dni, grupo_sanguineo)
-        
         self.lista_pacientes.append(paciente)
+        self.escribir_CSV("Pacientes.csv")
+
         print("Paciente ingresado correctamente.")
         
-        self.escribir_JSON()
-        
-        """
-        Crea un archivo JSON con la lista de Pacientes.
-        """
 
     def generar_identificador(self) -> int:
         """
@@ -159,68 +152,21 @@ class Enfermero:
             if paciente.dni == dni:
                 return paciente
         return None
-#Aca lee el CSV
-    def leer_CSV(self, path: str = "Pacientes.csv") -> list:
-        """
-        •	Descripción:
-            o	Este método se encarga de leer un archivo CSV que contiene información de pacientes.
-            o	Intenta abrir el archivo especificado en la ruta proporcionada.
-            o	Lee cada línea del archivo CSV, crea objetos Pacientes con los datos leídos y los agrega a una lista.
-            o	Maneja errores como la falta del archivo, errores de formato CSV o errores al procesar líneas específicas.
-        •	Parámetros:
-            o	path (str, opcional): Ruta del archivo CSV a leer. Por defecto, el método intentará leer el archivo "Pacientes.csv".
-        •	Valor de Retorno:
-            o	Retorna una lista de objetos Pacientes que representan a los pacientes leídos del archivo CSV.
-            o	Si el archivo no se encuentra, imprime un mensaje de error y retorna una lista vacía.
-            o	Si se produce un error al leer el archivo CSV, imprime un mensaje de error específico y retorna una lista vacía.
-        """
-        ruta_absoluta = os.path.join(os.path.dirname(__file__), path)
-        lista_pacientes = []
-        try:
-            with open(ruta_absoluta, "r", encoding="utf8") as archivo:
-                lector = csv.reader(archivo)
-                next(lector)
-                for campos in lector:
-                    try:
-                        paciente = Pacientes(
-                            iden=int(campos[0]),
-                            nombre=campos[1],
-                            apellido=campos[2],
-                            edad=int(campos[3]),
-                            altura=int(campos[4]),
-                            peso=float(campos[5]),
-                            dni=int(campos[6]),
-                            grupo_sanguineo=campos[7]
-                        )
-                        lista_pacientes.append(paciente)
-                    except (IndexError, ValueError) as e:
-                        print(f"Error al procesar la línea {lector.line_num}: {e}")
-        except FileNotFoundError:
-            print(f"No se encontró el archivo: {ruta_absoluta}")
-        except csv.Error as e:
-            print(f"Error al leer el archivo CSV: {e}")
-        return lista_pacientes
         
 #1. Dar de alta. Pedira los datos necesarios y dará de alta a un nuevo paciente, asignando un ID autoincremental.
     def dar_alta(self) -> bool:
         """
-        •	Descripción:
-            o	Este método se encarga de dar de alta un nuevo paciente en el sistema.
-            o	Primero, genera un identificador único para el nuevo paciente utilizando el método generar_identificador.
-            o	Luego, solicita al usuario que ingrese el DNI del paciente.
-            o	Verifica si el paciente ya está registrado en la lista de pacientes. Si el DNI ya existe, muestra un mensaje de error y devuelve False.
-            o	Invoca la función alta() para solicitar los datos necesarios del paciente y agregarlo al sistema.
-            o	Ofrece opciones para confirmar o cancelar el alta del paciente.
-            o	Si se confirma el alta, llama al método ingreso_pacientes para agregar al paciente en la lista y devuelve True.
-            o	Si se cancela el alta, muestra un mensaje y devuelve False.
-            o	Si se ingresa una opción inválida, muestra un mensaje de error y devuelve False.
-        •	Valor de Retorno:
-            o	Retorna True si se dio de alta correctamente al paciente.
-            o	Retorna False si no se pudo dar de alta al paciente, ya sea porque el DNI ya está registrado o se canceló la operación.
+        Propósito
+            El método dar_alta es responsable de agregar un nuevo paciente a la lista de pacientes después de verificar 
+            que el paciente no está ya registrado mediante su DNI.
+        Argumentos:
+            self: Referencia a la instancia de la clase que contiene la lista de pacientes y métodos auxiliares.
+        Retorno:
+            bool: Retorna True si el paciente se registra exitosamente, False en caso contrario (ya registrado o se cancela el alta).
         """
         id_autoincremental = self.generar_identificador()
         
-        dni = dni_valido("Ingrese el DNI del paciente: ")
+        dni = dni_valida("Ingrese el DNI del paciente: ")
         for paciente in self.lista_pacientes:
             if paciente.dni == dni:
                 print("El paciente ya está registrado.")
@@ -228,186 +174,149 @@ class Enfermero:
         
         alta()
         
-        match input("Opción: ").strip(".", "-", " "):
-            case "1":
-                self.ingreso_pacientes(id_autoincremental)
-                return True
-            case "2":
-                print("No se realizó el alta del paciente.")
-                return False
-            case _:
-                print("Opción inválida.")
-                return False
+        opcion = input("Opción: ").strip()
+        if opcion == "1":
+            self.ingreso_pacientes(id_autoincremental)
+            return True
+        elif opcion == "2":
+            print("No se realizó el alta del paciente.")
+            return False
+        else:
+            print("Opción inválida.")
+            return False
 #2. Modificar. Permitira alterar cualquier dato del paciente excepto su ID. Se usará el DNI para identificar al paciente a modificar
     def modificar_paciente(self):
-        dni = dni_valido("Ingrese el DNI del paciente a modificar: ")
         """
-        •	Descripción:
-            o	Este método permite modificar los datos de un paciente existente en el sistema, utilizando su DNI como identificador.
-            o	Primero, solicita al usuario que ingrese el DNI del paciente que se desea modificar.
-            o	Luego, busca al paciente en la lista de pacientes por su DNI.
-            o	Si encuentra al paciente, muestra sus datos actuales y solicita confirmación para proceder con la modificación.
-            o	Si se confirma la modificación, solicita los nuevos datos del paciente y los asigna al paciente correspondiente.
-            o	Ofrece la opción de confirmar o deshacer la modificación.
-            o	Si se cancela la modificación, muestra un mensaje indicando que la modificación ha sido cancelada.
-            o	Si no se encuentra ningún paciente con el DNI proporcionado, muestra un mensaje indicando que no se encontró ningún paciente.
-        •	Valor de Retorno:
-            o	No tiene un valor de retorno explícito. El método interactúa con el usuario para realizar la modificación y mostrar mensajes informativos.
+        Propósito:
+            Permite modificar los datos de un paciente existente en la lista de pacientes, identificado mediante su DNI.
+        
+        Argumentos:
+            self: Referencia a la instancia de la clase que contiene la lista de pacientes y métodos auxiliares.
+        
+        Valor de Retorno:
+            No retorna un valor explícito, pero imprime mensajes para informar al usuario sobre el resultado de la operación.
         """
-
-        for paciente in self.lista_pacientes:
-            if paciente.dni == dni:
-                print("Datos actuales del paciente:")
-                print(paciente)
+        dni = dni_valida("Ingrese el DNI del paciente a modificar: ")
+        paciente = self.buscar_DNI(dni)
+        
+        if paciente:
+            print("Datos actuales del paciente:")
+            print(paciente)
                 
-                if seguro():
-                    print("Ingrese los nuevos datos del paciente:")
-                    nombre = nombre_apellido_valido("Ingrese el nombre del paciente: ", 3, 20)
-                    apellido = nombre_apellido_valido("Ingrese el apellido del paciente: ", 3, 20)
-                    edad = edad_valido("Ingrese la edad del paciente: ")
-                    altura = altura_valido("Ingrese la altura del paciente: ")
-                    peso = peso_valido("Ingrese el peso del paciente: ")
-                    grupo_sanguineo = grupo_sanguineo_valido("Ingrese el grupo sanguíneo del paciente: ")
-                    
-                    paciente.nombre = nombre
-                    paciente.apellido = apellido
-                    paciente.edad = edad
-                    paciente.altura = altura
-                    paciente.peso = peso
-                    paciente.grupo_sanguineo = grupo_sanguineo
-                    
-                    print("Paciente modificado correctamente.")
-                    
-                    if seguro():
-                        print("Modificación confirmada.")
-                    else:
-                        print("Modificación deshecha. Datos restaurados.")
-                else:
-                    print("Modificación cancelada.")
-                return
-            
-        print("No se encontró ningún paciente con el DNI proporcionado.")
+            seguro()
+            opcion = input("Opción: ").strip()
+            if opcion == "1":
+                print("Ingrese los nuevos datos del paciente:")
+                nombre = nombre_apellido_valida("Ingrese el nombre del paciente: ", 3, 20).capitalize()
+                apellido = nombre_apellido_valida("Ingrese el apellido del paciente: ", 3, 20).capitalize()
+                edad = edad_valida("Ingrese la edad del paciente: ")
+                altura = altura_valida("Ingrese la altura del paciente: ")
+                peso = peso_valida("Ingrese el peso del paciente: ")
+                grupo_sanguineo = grupo_sanguineo_valida("Ingrese el grupo sanguíneo del paciente: ")
+                
+                paciente.nombre = nombre
+                paciente.apellido = apellido
+                paciente.edad = edad
+                paciente.altura = altura
+                paciente.peso = peso
+                paciente.grupo_sanguineo = grupo_sanguineo
+                
+                print("Paciente modificado correctamente.")
+            else:
+                print("Modificación cancelada.")
+        else:
+            print("No se encontró ningún paciente con el DNI proporcionado.")
 #3. Eliminar. Eliminará permanentemente a un paciente del listado original. Se pedira el DNI del paciente a eliminar.            
     def eliminar_paciente(self):
         """
-        •	Descripción:
-            o	Este método permite eliminar permanentemente a un paciente del listado de pacientes.
-            o	Solicita al usuario que ingrese el DNI del paciente que se desea eliminar.
-            o	Busca al paciente en la lista de pacientes por su DNI.
-            o	Si encuentra al paciente, solicita confirmación al usuario antes de proceder con la eliminación.
-            o	Si se confirma la eliminación, elimina al paciente de la lista de pacientes.
-            o	Además, solicita al usuario que confirme si desea eliminar al paciente del archivo JSON correspondiente.
-            o	Si se cancela la eliminación, muestra un mensaje indicando que la eliminación ha sido cancelada.
-            o	Si el paciente no es encontrado en la lista de pacientes, muestra un mensaje indicando que el paciente no ha sido encontrado.
-        •	Valor de Retorno:
-            o	No tiene un valor de retorno explícito. El método interactúa con el usuario para realizar la eliminación y mostrar mensajes informativos.
+        Propósito:
+            Eliminar un paciente de la lista de pacientes, identificado mediante su DNI, después de obtener la confirmación del usuario.
+        Argumentos:
+            self: Referencia a la instancia de la clase que contiene la lista de pacientes y métodos auxiliares.
+        Retorno:
+            No retorna un valor explícito, pero imprime mensajes para informar al usuario sobre el resultado de la operación.
         """
-        dni = dni_valido("Ingrese el DNI del paciente a eliminar: ")
-        paciente_encontrado = False
+        dni = dni_valida("Ingrese el DNI del paciente a eliminar: ")
+        paciente = self.buscar_DNI(dni)
         
-        for paciente in self.lista_pacientes:
-            if paciente.dni == dni:
-                paciente_encontrado = True
-                confirmacion = seguro("¿Está seguro que desea eliminar al paciente? (s/n): ")
-                if confirmacion:
-                    self.lista_pacientes.remove(paciente)
-                    print("Paciente eliminado correctamente.")
-                    self.eliminar_JSON(paciente.iden) 
-                    break
-                else:
-                    print("Eliminación cancelada. El paciente no se ha eliminado.")
-                break
-        
-        if not paciente_encontrado:
+        if paciente:
+            seguro()
+            opcion = input("Opción: ").strip()
+            if opcion == "1":
+                self.lista_pacientes.remove(paciente)
+                print("Paciente eliminado correctamente.")
+                self.eliminar_JSON(paciente.iden)
+            else:
+                print("Eliminación cancelada.")
+        else:
             print("Paciente no encontrado.")
         
 #4. Mostrar todos los pacientes.                
     def mostrar_todosLos_pacientes(self):
         """
-        •	Descripción:
-            o	Este método muestra todos los pacientes almacenados en la lista de pacientes, leyendo los datos desde el archivo CSV.
-            o	Si no hay pacientes para mostrar, imprime un mensaje indicando que no hay pacientes registrados.
-            o	Si hay pacientes, imprime una tabla con la información de cada paciente, incluyendo su nombre, apellido, edad, altura, peso, DNI y grupo sanguíneo.
-        •	Valor de Retorno:
-            o	No tiene un valor de retorno explícito. El método interactúa con el usuario para mostrar los pacientes y mensajes informativos.
-
+        Propósito:
+            Mostrar una lista de todos los pacientes almacenados en el archivo Pacientes.csv.
+        Argumentos:
+            self: Referencia a la instancia de la clase que contiene métodos auxiliares y posiblemente atributos de la clase.
+        Valor de Retorno:
+            No retorna un valor explícito, pero imprime la lista de pacientes al usuario.
         """
-        pacientes = self.leer_CSV("Pacientes.csv")
-        if not pacientes:
-            print("No hay pacientes para mostrar")
+        if not self.lista_pacientes:
+            print("No hay pacientes para mostrar.")
             return
+        
         print("*****************************************************************************************")
         print("| Nombre | Apellido | Edad | Altura | Peso | DNI | Grupo sanguíneo |")
-        print("—------------------------------------------------------------------------------------------------")
-        for paciente in pacientes:
-            print(f"|{paciente.iden}| {paciente.nombre} | {paciente.apellido} | {paciente.edad} | {paciente.altura} cm | {paciente.peso} kg | {paciente.dni} | {paciente.grupo_sanguineo} |")
+        print("-----------------------------------------------------------------------------------------")
+        for paciente in self.lista_pacientes:
+            print(f"| {paciente.nombre} | {paciente.apellido} | {paciente.edad} | {paciente.altura} cm | {paciente.peso} kg | {paciente.dni} | {paciente.grupo_sanguineo} |")
         print("*****************************************************************************************")
         
 #5. Ordenar pacientes. Ofrecer la opción de ordenar y mostrar la lista de pacientes de forma ascendente o descendente por: 
     def Ordenar(self):
         """
-        •	Descripción:
-            o	Este método permite al usuario ordenar y mostrar la lista de pacientes de forma ascendente o descendente según un criterio específico.
-            o	Los criterios de ordenamiento disponibles son: nombre, apellido, altura y grupo sanguíneo.
-            o	Utiliza el algoritmo de ordenamiento de burbuja para realizar la ordenación de la lista de pacientes.
-            o	El método contiene subfunciones internas para realizar el ordenamiento y mostrar un menú de opciones al usuario.
-        •	Parámetros:
-            o	No recibe parámetros explícitos. Interactúa con el usuario para solicitar el tipo de ordenamiento y la dirección (ascendente o descendente).
-        •	Valor de Retorno:
-            o	No tiene un valor de retorno explícito. El método interactúa con el usuario para mostrar los pacientes ordenados según el criterio seleccionado.
-
-        """
-
-        def bubble_sort(pacientes, key, ascendente=True):
-            n = len(pacientes)
-            for i in range(n - 1):
-                for j in range(n - i - 1):
+        Función:
+            Proporcionar una funcionalidad para ordenar la lista de pacientes según diversos criterios 
+            (nombre, apellido, altura, grupo sanguíneo) en orden ascendente o descendente, basada en la entrada del usuario.
+        Argumentos
+            self: Referencia a la instancia de la clase que contiene la lista de pacientes y métodos auxiliares.
+        Valor de Retorno
+            No retorna un valor explícito, pero imprime mensajes informativos sobre el estado del ordenamiento al usuario.
+        """ 
+        def bubble_sort(arr, key, ascendente=True):
+            num_pacientes = len(arr)
+            for pase in range(num_pacientes):
+                for posicion in range(0, num_pacientes - pase - 1):
                     if ascendente:
-                        if pacientes[j].__dict__[key] > pacientes[j + 1].__dict__[key]:
-                            orden = pacientes[j]
-                            pacientes[j] = pacientes[j + 1]
-                            pacientes[j + 1] = orden
+                        if arr[posicion].__dict__[key] > arr[posicion + 1].__dict__[key]:
+                            arr[posicion], arr[posicion + 1] = arr[posicion + 1], arr[posicion]
                     else:
-                        if pacientes[j].__dict__[key] < pacientes[j + 1].__dict__[key]:
-                            orden = pacientes[j]
-                            pacientes[j] = pacientes[j + 1]
-                            pacientes[j + 1] = orden
+                        if arr[posicion].__dict__[key] < arr[posicion + 1].__dict__[key]:
+                            arr[posicion], arr[posicion + 1] = arr[posicion + 1], arr[posicion]
 
         def ordenar_por(tipo: str, ascendente: bool = True):
-            match tipo:
-                case "nombre" | "apellido" | "altura" | "grupo_sanguineo":
-                    try:
-                        bubble_sort(self.lista_pacientes, tipo, ascendente)
-                        print(f"Pacientes ordenados por {tipo} de forma {'ascendente' if ascendente else 'descendente'}.")
-                    except AttributeError as e:
-                        print(f"Error en la ordenación: {e}")
-                case _:
-                    print("Opción no válida")
+            try:
+                match tipo:
+                    case "nombre":
+                        bubble_sort(self.lista_pacientes, "nombre", ascendente)
+                    case "apellido":
+                        bubble_sort(self.lista_pacientes, "apellido", ascendente)
+                    case "altura":
+                        bubble_sort(self.lista_pacientes, "altura", ascendente)
+                    case "grupo_sanguineo":
+                        bubble_sort(self.lista_pacientes, "grupo_sanguineo", ascendente)
+                    case _:
+                        print("Tipo de ordenamiento inválido.")
+                        return
+                print(f"Pacientes ordenados por {tipo} de forma {'ascendente' if ascendente else 'descendente'}.")
+            except AttributeError as e:
+                print(f"Error en la ordenación: {e}")
 
-        def menu_ordenar():
-            print("Opciones de ordenamiento:")
-            print("1. Ordenar por nombre")
-            print("2. Ordenar por apellido")
-            print("3. Ordenar por altura")
-            print("4. Ordenar por grupo sanguíneo")
-            return input("Selecciona una opción de ordenamiento: ")
-
-        orden = menu_ordenar()
-        asc = input("Orden ascendente (s/n): ").strip().lower() == 's'
-        desc = input("Orden descendente (s/n): ").strip().lower() == 's'
-
-        if asc and desc:
-            print("No se puede seleccionar ascendente y descendente al mismo tiempo.")
-            return
-        if asc:
-            ascendente = True
-        elif desc:
-            ascendente = False
-        else:
-            print("Debes seleccionar ascendente o descendente.")
-            return
-
-        match orden:
+        menu_ordenar()
+        opcion = input("Selecciona una opción de ordenamiento: ").strip()
+        ascendente = input("Orden ascendente (s/n): ").strip().lower() == 's'
+        
+        match opcion:
             case "1":
                 ordenar_por("nombre", ascendente)
             case "2":
@@ -417,79 +326,56 @@ class Enfermero:
             case "4":
                 ordenar_por("grupo_sanguineo", ascendente)
             case _:
-                print("Opción no válida")
+                print("Opción de ordenamiento inválida.")
     
 #6. Buscar paciente por DNI: Permitir al usuario buscar y mostrar la información de un paciente específico ingresando su DNI.
-    def buscar_DNI(self, dni: int):
+    def buscar_DNI(self):
         """
-        •	Descripción:
-            o	Este método permite al usuario buscar y mostrar la información de un paciente específico ingresando su número de DNI.
-            o	Utiliza una iteración sobre la lista de pacientes para buscar aquel cuyo DNI coincida con el proporcionado por el usuario.
-            o	Si encuentra al paciente, muestra sus detalles en un formato tabular.
-            o	Proporciona al usuario la opción de continuar o cancelar la búsqueda.
-        •	Parámetros:
-            o	dni (int): El número de DNI del paciente que se desea buscar.
-        •	Valor de Retorno:
-            o	Pacientes o None: Retorna el objeto del paciente encontrado si se encuentra en la lista, de lo contrario, retorna None.
-        """
-        for paciente in self.lista_pacientes:
-            if paciente.dni == dni:
-                print("*****************************************************************************************")
-                print("| Nombre | Apellido | Edad | Altura | Peso | DNI | Grupo sanguíneo |")
-                print("—------------------------------------------------------------------------------------------------")
-                print(f"|{paciente.iden}| {paciente.nombre} | {paciente.apellido} | {paciente.edad} | {paciente.altura} cm | {paciente.peso} kg | {paciente.dni} | {paciente.grupo_sanguineo} |")
-                print("*****************************************************************************************")
-                if seguro("¿Desea continuar con esta búsqueda? (s/n): "):
-                    return paciente
-                else:
-                    print("Búsqueda cancelada.")
-                    return None
-        print("Paciente no encontrado.")
-        return None
+        Propósito:
+            Permitir al usuario buscar y mostrar información detallada de un paciente específico en la lista de pacientes 
+            usando su DNI (Documento Nacional de Identidad).
+        Argumentos:
+            self: Referencia a la instancia de la clase que contiene la lista de pacientes y métodos auxiliares.
+        Valor de Retorno:
+            No retorna un valor explícito, pero imprime información del paciente encontrado o un mensaje de error si no se encuentra.
+        """ 
+        dni = dni_valida("Ingrese el DNI del paciente a buscar: ")
+        paciente = self.buscar_DNI(dni)
+        
+        if paciente:
+            print("Paciente encontrado:")
+            print(paciente)
+        else:
+            print("Paciente no encontrado.")
     
 #7 calcular promedio: Mostrar un submenú que permita calcular y mostrar el promedio de:
-    def promedio(self, tipo: str):
+    def promedio(self):
         """
-        •	Descripción:
-            o	Este método permite calcular y mostrar el promedio de una variable específica para todos los pacientes en la lista.
-            o	Utiliza una iteración sobre la lista de pacientes y suma los valores de la variable especificada.
-            o	Calcula el promedio dividiendo la suma total por el número de pacientes.
-            o	Muestra el resultado del cálculo del promedio.
-        •	Parámetros:
-            o	tipo (str): Indica la variable para la cual se desea calcular el promedio. Puede ser "edad", "altura" o "peso".
-        •	Valor de Retorno:
-            o	float o None: Retorna el valor del promedio calculado si se puede calcular con éxito, de lo contrario, retorna None.
-
+        Propósito:
+            Calcular y mostrar los promedios de edad, altura y peso de los pacientes registrados en la lista de pacientes.
+        Argumentos:
+            self: Referencia a la instancia de la clase que contiene la lista de pacientes.
+        Valor de Retorno:
+            No retorna un valor explícito, pero imprime los promedios calculados de edad, altura y peso de los pacientes.
         """
-        self.leer_CSV("Pacientes.csv")
-        if not self.lista_pacientes:
-            print("No hay pacientes en la lista para calcular el promedio.")
-            return None
-
-        total = 0
-        enfermos = len(self.lista_pacientes)
-
-        try:
-            match tipo:
-                case "edad":
-                    for paciente in self.lista_pacientes:
-                        total += paciente.edad
-                case "altura":
-                    for paciente in self.lista_pacientes:
-                        total += paciente.altura
-                case "peso":
-                    for paciente in self.lista_pacientes:
-                        total += paciente.peso
-                case _:
-                    print("Criterio no válido")
-                    return None
-
-            resultado = total / enfermos
-            print(f"El promedio de {tipo} es: {resultado}")
-
-        except AttributeError as e:
-            print(f"Error al acceder a los atributos de los pacientes: {e}")
-            return None
+        sum_edad = 0; sum_altura = 0; sum_peso = 0
+        total = len(self.lista_pacientes)
+        
+        for paciente in self.lista_pacientes:
+            sum_edad += paciente["edad"]
+            sum_altura += paciente["altura"]
+            sum_peso += paciente["peso"]
+        
+        if total > 0:
+            promedio_edad = sum_edad / total
+            promedio_altura = sum_altura / total
+            promedio_peso = sum_peso / total
+            
+            print(f"Promedio de edad de los pacientes: {promedio_edad}")
+            print(f"Promedio de altura de los pacientes: {promedio_altura}")
+            print(f"Promedio de peso de los pacientes: {promedio_peso}")
+        else:
+            print("No hay pacientes registrados.")
         
         
 #8. Salir. Terminará la ejecución del programa.
@@ -506,135 +392,125 @@ class Enfermero:
         print("Gracias por usar el sistema. ¡Hasta pronto!")
         return
         
-#Guarda la lista de objetos en el CSV
-    def guardar_CSV(self, path: str = "Pacientes.csv"):
+    #Aca lee el CSV
+    def leer_CSV(self, path: str = "Pacientes.csv") -> list:
         """
-        •	Descripción:
-            o	Este método guarda la lista de objetos en un archivo CSV.
-            o	Recibe como argumento la ruta del archivo CSV donde se guardará la información.
-            o	Utiliza la biblioteca csv de Python para escribir en el archivo CSV.
-            o	Crea el archivo CSV si no existe y escribe los datos de los pacientes en él.
-        •	Argumentos:
-            o	path (str): Ruta del archivo CSV donde se guardará la información.
-        •	Acciones:
-            1.	Obtiene la ruta absoluta del archivo CSV utilizando os.path.join(os.path.dirname(__file__), path). Esto asegura que se use la ruta completa del archivo, independientemente de dónde se ejecute el programa.
-            2.	Abre el archivo CSV en modo escritura ("w") con la opción newline='' para evitar que se agreguen líneas en blanco entre las filas y con la codificación "utf8".
-            3.	Utiliza un objeto csv.writer para escribir en el archivo CSV.
-            4.	Escribe la fila de encabezado con los nombres de las columnas.
-            5.	Itera sobre la lista de pacientes y escribe cada uno de ellos en una fila del archivo CSV.
-            6.	Maneja excepciones como FileNotFoundError y csv.Error en caso de que ocurran errores durante la escritura en el archivo.
-        •	Valor de Retorno:
-            o	No hay un valor de retorno explícito, ya que este método simplemente guarda la lista de objetos en el archivo CSV.
+        Propósito: 
+        Leer datos de un archivo CSV que contiene información de pacientes y cargarlos en una lista de diccionarios.
 
+        Argumentos:
+        path: Ruta del archivo CSV a leer. Por defecto, se espera "Pacientes.csv" en el directorio actual.
+        
+        Valor de retorno: 
+        Lista de diccionarios, cada uno representando un paciente con sus atributos.
         """
         ruta_absoluta = os.path.join(os.path.dirname(__file__), path)
         try:
-            with open(ruta_absoluta, "w", newline='', encoding="utf8") as archivo:
-                escritor = csv.writer(archivo)
-                escritor.writerow(["ID", "Nombre", "Apellido", "Edad", "Altura", "Peso", "DNI", "Grupo_sanguineo"])
-                for paciente in self.lista_pacientes:
-                    escritor.writerow([
-                        paciente.id, paciente.nombre, paciente.apellido,
-                        paciente.edad, paciente.altura, paciente.peso,
-                        paciente.dni, paciente.grupo_sanguineo])
+            with open(ruta_absoluta, "r", encoding="utf8") as archivo:
+                lector = csv.DictReader(archivo)
+                for campos in lector:
+                    paciente = Pacientes(
+                        iden=int(campos["Iden"]),
+                        nombre=campos["Nombre"],
+                        apellido=campos["Apellido"],
+                        edad=int(campos["Edad"]),
+                        altura=int(campos["Altura"]),
+                        peso=float(campos["Peso"]),
+                        dni=int(campos["DNI"]),
+                        grupo_sanguineo=campos["Sangre"]
+                    )
+                    self.lista_pacientes.append(paciente)
         except FileNotFoundError:
             print(f"No se encontró el archivo: {ruta_absoluta}")
         except csv.Error as e:
-            print(f"Error al escribir en el archivo: {e}")
-                
-#Escribe la lista de objetos en el CSV
-    def escribir_CSV(self, path: str, paciente: Pacientes):
+            print(f"Error al leer el archivo CSV: {e}")
+
+    #Guarda la lista de objetos en el CSV
+    def guardar_CSV(self, pacientes: list, archivo: str):
         """
-        •	Descripción:
-            o	Este método escribe un objeto de paciente en un archivo CSV.
-            o	Recibe como argumentos la ruta del archivo CSV donde se escribirá la información y el objeto de paciente que se escribirá en el archivo.
-        •	Argumentos:
-            o	path (str): Ruta del archivo CSV donde se escribirá la información.
-            o	paciente (Pacientes): Objeto de paciente que se escribirá en el archivo CSV.
-        •	Acciones:
-            1.	Obtiene la ruta absoluta del archivo CSV utilizando os.path.join(os.path.dirname(__file__), path). Esto asegura que se use la ruta completa del archivo, independientemente de dónde se ejecute el programa.
-            2.	Abre el archivo CSV en modo de agregado ("a") con la opción newline='' para evitar que se agreguen líneas en blanco entre las filas y con la codificación "utf8".
-            3.	Utiliza un objeto csv.writer para escribir en el archivo CSV.
-            4.	Escribe una nueva fila en el archivo CSV con los atributos del objeto de paciente.
-            5.	Maneja excepciones como FileNotFoundError y IOError en caso de que ocurran errores durante la escritura en el archivo.
-        •	Valor de Retorno:
-            o	No hay un valor de retorno explícito, ya que este método simplemente escribe un objeto de paciente en el archivo CSV.
+        Propósito:
+            Guardar los datos de la lista de pacientes en un archivo CSV.
+        Argumentos:
+            self: Referencia a la instancia de la clase que contiene la lista de pacientes.
+            pacientes: Una lista de diccionarios, donde cada diccionario representa un paciente con sus atributos.
+            archivo: Una cadena que especifica el nombre del archivo CSV en el cual se guardarán los datos.
+        Valor de Retorno:
+            No retorna un valor explícito, pero imprime un mensaje indicando el éxito o fracaso de la operación.
         """
-        ruta_absoluta = os.path.join(os.path.dirname(__file__), path)
         try:
-            with open(ruta_absoluta, "a", newline='', encoding="utf8") as archivo:
-                """
-                El "a" es para agregar. El "newline" es para que no me genere un salto de linea. 
-                El "encoding" es para que me acepte caracteres especiales.
-                """
-                escritor = csv.writer(archivo)
-                escritor.writerow([paciente.iden, paciente.nombre, paciente.apellido, paciente.edad, paciente.altura, paciente.peso, paciente.dni, 
-                                    paciente.grupo_sanguineo])
-        except FileNotFoundError:
-            print(f"No se encontró el archivo: {ruta_absoluta}")
-        except IOError as e:
-            print(f"Error al escribir en el archivo: {e}")
-            
-#Dar de alta en JSON
+            with open(archivo, 'w', newline='') as file:
+                writer = csv.DictWriter(file, nombre_archivo=pacientes[0].keys())
+                writer.writeheader()
+                writer.writerows(pacientes)
+            print("Datos guardados correctamente en el archivo CSV.")
+        except IOError:
+            print(f"No se pudo guardar el archivo {archivo}.")
+                    
+    #Escribe la lista de objetos en el CSV
+    def escribir_CSV(self, archivo: str):
+        """
+        Propósito:
+            Escribir los datos de la lista de pacientes en un archivo CSV especificado.
+        Argumentos:
+            self: Referencia a la instancia de la clase que contiene la lista de pacientes.
+            archivo: Una cadena que especifica el nombre del archivo CSV en el cual se guardarán los datos.
+        Valor de Retorno:
+            No retorna un valor explícito, pero imprime un mensaje indicando el éxito o fracaso de la operación.
+        """
+        try:
+            with open(archivo, 'w', newline='') as file:
+                writer = csv.DictWriter(file, fieldnames=self.lista_pacientes[0].keys())
+                writer.writeheader()
+                writer.writerows(self.lista_pacientes)
+            print("Datos guardados correctamente en el archivo CSV.")
+        except IOError:
+            print(f"No se pudo guardar el archivo {archivo}.")
+
+    #Dar de alta en JSON
     def escribir_JSON(self):
         """
-        •	Descripción:
-            o	Este método escribe la lista de objetos de pacientes en un archivo JSON llamado "Alta.json".
-        •	Acciones:
-            1.	Itera sobre la lista de pacientes (self.lista_pacientes).
-            2.	Para cada paciente, crea un diccionario paciente_info que contiene los atributos del paciente con sus respectivos nombres de clave.
-            3.	Agrega este diccionario a la lista pacientes_alta.
-            4.	Abre el archivo "Alta.json" en modo de escritura ("w").
-            5.	Utiliza json.dump para escribir la lista pacientes_alta en el archivo JSON.
-            6.	Utiliza indent=4 para que el JSON resultante tenga una indentación de 4 espacios, lo que lo hace más legible.
-        •	Valor de Retorno:
-            o	No hay un valor de retorno explícito, ya que este método simplemente escribe la lista de pacientes en un archivo JSON.
+        Propósito:
+            Guardar los datos de la lista de pacientes en un archivo JSON especificado.
+        Argumentos:
+            self: Referencia a la instancia de la clase que contiene la lista de pacientes.
+            archivo: Una cadena que especifica el nombre del archivo JSON en el cual se guardarán los datos.
+        Valor de Retorno:
+            No retorna un valor explícito, pero imprime un mensaje indicando el éxito o fracaso de la operación.
         """
-        pacientes_alta = []
-        for paciente in self.lista_pacientes:
-            paciente_info = {
-                "ID": paciente.iden,
-                "Nombre": paciente.nombre,
-                "Apellido": paciente.apellido,
-                "Edad": paciente.edad,
-                "Altura": paciente.altura,
-                "Peso": paciente.peso,
-                "DNI": paciente.dni,
-                "Grupo_sanguineo": paciente.grupo_sanguineo
-            }
-            pacientes_alta.append(paciente_info)
+        try:
+            with open("Alta.json", "w", encoding="utf-8", newline='') as file:
+                json.dump([paciente.__dict__ for paciente in self.lista_pacientes], file, indent=4)
+            print("Datos guardados correctamente en el archivo JSON.")
+        except IOError:
+            print("No se pudo guardar el archivo Alta.json.")
 
-        with open("Alta.json", "w") as json_file:
-            json.dump(pacientes_alta, json_file, indent=4)
-            
-#Eliminar en JSON
-    def eliminar_JSON(self, iden: int):
+    #Eliminar en JSON
+    def eliminar_JSON(self, id_paciente: int):
         """
-        •	Descripción:
-            o	Este método elimina un objeto del archivo JSON "Eliminados.json" basado en su identificador.
-        •	Acciones:
-            1.	Itera sobre la lista de pacientes (self.lista_pacientes).
-            2.	Si el identificador del paciente no coincide con el identificador proporcionado, se agrega la información del paciente a la lista pacientes_muertos.
-            3.	Abre el archivo "Eliminados.json" en modo de escritura ("w").
-            4.	Utiliza json.dump para escribir la lista pacientes_muertos en el archivo JSON.
-            5.	Utiliza indent=4 para que el JSON resultante tenga una indentación de 4 espacios, lo que lo hace más legible.
-        •	Valor de Retorno:
-            o	No hay un valor de retorno explícito, ya que este método simplemente elimina el objeto del archivo JSON.
+        Propósito:
+            Este método tiene como objetivo eliminar un paciente de la lista de pacientes y agregarlo a un archivo JSON 
+            llamado "Muertos.json".
+        Argumentos:
+            self: Referencia a la instancia de la clase que contiene la lista de pacientes.
+            id_paciente: El identificador único del paciente que se eliminará.
+        Valor de Retorno:
+            No retorna un valor explícito, pero maneja la eliminación del paciente de la lista de pacientes y 
+            su adición al archivo JSON de pacientes eliminados.
         """
-        pacientes_muertos = []
-        for paciente in self.lista_pacientes:
-            if paciente.iden != iden:
-                paciente_info = {
-                    "ID": paciente.iden,
-                    "Nombre": paciente.nombre,
-                    "Apellido": paciente.apellido,
-                    "Edad": paciente.edad,
-                    "Altura": paciente.altura,
-                    "Peso": paciente.peso,
-                    "DNI": paciente.dni,
-                    "Grupo_sanguineo": paciente.grupo_sanguineo
-                }
-                pacientes_muertos.append(paciente_info)
+        try:
+            with open("Muertos.json", "r") as f:
+                pacientes_eliminados = json.load(f)
+        except FileNotFoundError:
+            pacientes_eliminados = []
 
-        with open("Eliminados.json", "w") as json_file:
-            json.dump(pacientes_muertos, json_file, indent=4)
+        for paciente in self.lista_pacientes:
+            if paciente.iden == id_paciente:
+                pacientes_eliminados.append(paciente.__dict__)
+                self.lista_pacientes.remove(paciente)
+                break
+
+        try:
+            with open("Muertos.json", "w") as f:
+                json.dump(pacientes_eliminados, f, indent=4)
+        except IOError:
+            print("Error al guardar los datos en el archivo JSON de pacientes eliminados.")

@@ -73,6 +73,11 @@ Aclaraciones:
 En caso de utilizar otro algoritmo de ordenamiento (Quick Sort, Merge Sort, etc) el alumno deberá comprender y saber explicar claramente 
 la forma en que el mismo trabaja. No se aceptará la utilización del método sort() de listas para realizar los ordenamientos.
 ● El uso de cualquier herramienta que no se haya visto en clases deberá ser justificado y defendido el día del 
+
+What if:
+Al iniciar el programa, se deberá leer el archivo Pacientes.csv para tener la lista de Pacientes actualizada.
+Al finalizar el programa (puede ser en la opción salir) se deberá actualizar el archivo Pacientes.csv, con los datos de los Pacientes.
+Los Pacientes que hayan sido dados de alta deberán guardarse en un archivo Json, llamado "Alta.json"
 """
 
 from os import system
@@ -120,36 +125,28 @@ def menu_principal(enfermero):
     - Después de ejecutar cada acción, limpia la pantalla y pausa la ejecución para que el usuario pueda ver los resultados.
     """
     enfermero = Enfermero([])
-    enfermero.leer_CSV("Pacientes.csv")
+    enfermero.leer_CSV()
     while True:
         system("cls")
         print(mostrar_opciones_pacientes())
         opcion = input("Selecciona una opción: ")
         match opcion:
             case "1":
-                enfermero.ingreso_pacientes()
+                enfermero.dar_alta()
             case "2":
-                dni = dni_valido("Ingrese el DNI del paciente a modificar: ")
-                paciente = enfermero.buscar_DNI(dni)
-                if paciente:
-                    enfermero.modificar_paciente(dni)
-                else:
-                    print("Paciente no encontrado.")
+                enfermero.modificar_paciente()
             case "3":
-                dni = dni_valido("Ingrese el DNI del paciente a eliminar: ")
-                enfermero.eliminar_paciente(dni)
+                enfermero.eliminar_paciente()
             case "4":
                 enfermero.mostrar_todosLos_pacientes()
             case "5":
                 enfermero.Ordenar()
             case "6":
-                dni = dni_valido("Ingrese el DNI del paciente a buscar: ")
-                print(enfermero.buscar_DNI(dni))
+                enfermero.buscar_DNI()
             case "7":
-                tipo = input("Ingrese el tipo de promedio a calcular (edad, altura, peso): ")
-                print(enfermero.promedio(tipo))
+                enfermero.promedio()
             case "8":
-                enfermero.guardar_CSV()
+                enfermero.escribir_CSV("Pacientes.csv")
                 enfermero.escribir_JSON()
                 enfermero.salir()
                 return
