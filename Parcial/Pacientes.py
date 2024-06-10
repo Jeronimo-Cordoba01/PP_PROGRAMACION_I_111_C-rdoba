@@ -533,9 +533,20 @@ class Enfermero:
         """
         try:
             with open(archivo, 'w', newline='') as file:
-                writer = csv.DictWriter(file, fieldnames=self.lista_pacientes[0].keys())
+                nombres = ["iden", "nombre", "apellido", "edad", "altura", "peso", "dni", "grupo_sanguineo"]
+                writer = csv.DictWriter(file, nombres=nombres)
                 writer.writeheader()
-                writer.writerows(self.lista_pacientes)
+                for paciente in self.lista_pacientes:
+                    writer.writerow({
+                        "iden": paciente.iden,
+                        "nombre": paciente.nombre,
+                        "apellido": paciente.apellido,
+                        "edad": paciente.edad,
+                        "altura": paciente.altura,
+                        "peso": paciente.peso,
+                        "dni": paciente.dni,
+                        "grupo_sanguineo": paciente.grupo_sanguineo
+                    })
             print("Datos guardados correctamente en el archivo CSV.")
         except IOError:
             print(f"No se pudo guardar el archivo {archivo}.")
