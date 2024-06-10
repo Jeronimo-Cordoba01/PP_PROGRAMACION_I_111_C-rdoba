@@ -329,16 +329,31 @@ class Enfermero:
                 print("Opción de ordenamiento inválida.")
     
 #6. Buscar paciente por DNI: Permitir al usuario buscar y mostrar la información de un paciente específico ingresando su DNI.
-    def buscar_DNI(self):
+    def buscar_DNI(self, dni):
         """
-        Propósito:
-            Permitir al usuario buscar y mostrar información detallada de un paciente específico en la lista de pacientes 
+        Descripción:
+            Busca un paciente por su DNI en la lista de pacientes.
+        Argumentos:
+            dni (int): El número de DNI que se utilizará para buscar al paciente.
+        Retorno:
+            Retorna el objeto Pacientes correspondiente al paciente encontrado si se encuentra un paciente con el DNI proporcionado.
+            Retorna None si no se encuentra ningún paciente con el DNI especificado.
+        """
+        for paciente in self.lista_pacientes:
+            if paciente.dni == dni:
+                return paciente
+        return None
+
+    def mostrar_paciente_por_DNI(self):
+        """
+        Descripción:
+            Permite al usuario buscar y mostrar información detallada de un paciente específico en la lista de pacientes 
             usando su DNI (Documento Nacional de Identidad).
         Argumentos:
             self: Referencia a la instancia de la clase que contiene la lista de pacientes y métodos auxiliares.
-        Valor de Retorno:
+        Retorno:
             No retorna un valor explícito, pero imprime información del paciente encontrado o un mensaje de error si no se encuentra.
-        """ 
+        """
         dni = dni_valida("Ingrese el DNI del paciente a buscar: ")
         paciente = self.buscar_DNI(dni)
         
@@ -358,24 +373,34 @@ class Enfermero:
         Valor de Retorno:
             No retorna un valor explícito, pero imprime los promedios calculados de edad, altura y peso de los pacientes.
         """
-        sum_edad = 0; sum_altura = 0; sum_peso = 0
+        if not self.lista_pacientes:
+            print("No hay pacientes registrados.")
+            return
+
+        tipo = input("Ingrese el tipo de promedio a calcular (edad, altura, peso): ").strip().lower()
+        
+        suma = 0
         total = len(self.lista_pacientes)
         
         for paciente in self.lista_pacientes:
-            sum_edad += paciente["edad"]
-            sum_altura += paciente["altura"]
-            sum_peso += paciente["peso"]
+            match tipo:
+                case "edad":
+                    suma += paciente.edad
+                case "altura":
+                    suma += paciente.altura
+                case "peso":
+                    suma += paciente.peso
+                case _:
+                    print("Tipo de promedio no válido.")
+                    return
         
-        if total > 0:
-            promedio_edad = sum_edad / total
-            promedio_altura = sum_altura / total
-            promedio_peso = sum_peso / total
-            
-            print(f"Promedio de edad de los pacientes: {promedio_edad}")
-            print(f"Promedio de altura de los pacientes: {promedio_altura}")
-            print(f"Promedio de peso de los pacientes: {promedio_peso}")
-        else:
-            print("No hay pacientes registrados.")
+        promedio = suma / total
+        if tipo == "edad":
+            print(f"Promedio de edad de los pacientes: {promedio}")
+        elif tipo == "altura":
+            print(f"Promedio de altura de los pacientes: {promedio} cm")
+        elif tipo == "peso":
+            print(f"Promedio de peso de los pacientes: {promedio} kg")
         
         
 #8. Salir. Terminará la ejecución del programa.

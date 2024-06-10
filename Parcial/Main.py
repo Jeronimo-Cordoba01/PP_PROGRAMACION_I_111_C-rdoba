@@ -92,7 +92,7 @@ def mostrar_opciones_pacientes():
         "\nMenú de gestión de Pacientes: \n"
         "1. Dar de alta paciente. \n"
         "2. Modificar paciente. \n"
-        "3. Eliminar pacientes. \n"
+        "3. Eliminar paciente. \n"
         "4. Mostrar todos los pacientes. \n"
         "5. Ordenar pacientes. \n"
         "6. Buscar paciente por el DNI. \n"
@@ -106,7 +106,7 @@ def menu_principal(enfermero):
     Implementa el menú principal del programa para la gestión de pacientes. Permite al usuario seleccionar diversas acciones 
     relacionadas con la gestión de pacientes.
 
-    Arrays:
+    Argumentos:
     - enfermero: Objeto de la clase Enfermero utilizado para llamar a funciones relacionadas con la gestión de pacientes.
 
     Returns:
@@ -124,7 +124,6 @@ def menu_principal(enfermero):
     o salir del programa.
     - Después de ejecutar cada acción, limpia la pantalla y pausa la ejecución para que el usuario pueda ver los resultados.
     """
-    enfermero = Enfermero([])
     enfermero.leer_CSV()
     while True:
         system("cls")
@@ -142,7 +141,7 @@ def menu_principal(enfermero):
             case "5":
                 enfermero.Ordenar()
             case "6":
-                enfermero.buscar_DNI()
+                enfermero.mostrar_paciente_por_DNI()
             case "7":
                 enfermero.promedio()
             case "8":
