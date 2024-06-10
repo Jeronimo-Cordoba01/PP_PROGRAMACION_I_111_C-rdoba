@@ -405,7 +405,56 @@ class Enfermero:
             print(f"Promedio de peso de los pacientes: {promedio} kg")
         
         
-#8. Salir. Terminará la ejecución del programa.
+#8. Mostrar todos los pacientes: Mostrar una lista de todos los pacientes almacenados en el archivo Pacientes.csv.
+    def determinar_compatibilidad(self):
+        """
+        Descripción:
+            Determina la compatibilidad entre dos grupos sangineos.
+        Argumentos:
+            self: Referencia a la instancia de la clase que contiene la lista de pacientes y métodos auxiliares.
+        Retorno:
+            No retorna un valor explícito, pero imprime la compatibilidad entre los dos grupos sangineos.
+        """
+        dni = dni_valida("Ingrese el DNI del paciente: ")
+        paciente = self.buscar_DNI(dni)
+        
+        if paciente:
+            compatibilidad = {
+                "A+": {"Donar": ["A+", "AB+"], "Recibir": ["O+", "O-", "A+", "A-"]},
+                "A-": {"Donar": ["A-", "AB-"], "Recibir": ["O-", "O+", "A-", "A+"]},
+                "B+": {"Donar": ["B+", "AB+"], "Recibir": ["O+", "O-", "B+", "B-"]},
+                "B-": {"Donar": ["B-", "AB-"], "Recibir": ["O-", "O+", "B-", "B+"]},
+                "AB+": {"Donar": ["AB+", "O+"], "Recibir": ["O+", "O-", "AB+", "AB-"]},
+                "AB-": {"Donar": ["AB-", "O-"], "Recibir": ["O-", "O+", "AB-", "AB+"]},
+                "O+": {"Donar": ["O+", "AB+"], "Recibir": ["O+", "O-", "A+", "A-", "B+", "B-", "AB+", "AB-"]},
+                "O-": {"Donar": ["O-", "AB-"], "Recibir": ["O-", "O+", "A-", "A+", "B-", "B+", "AB-", "AB+"]},                
+            }
+            
+        grupo_compatible = paciente.grupo_sanguineo
+        
+        if grupo_compatible in compatibilidad:
+            puede_donar = compatibilidad[grupo_compatible]["Donar"]
+            puede_recibir = compatibilidad[grupo_compatible]["Recibir"]
+            
+            print(f"El paciente {paciente} puede donar a: {', '.join(puede_donar)}")
+            print(f"El paciente {paciente} puede recibir de: {', '.join(puede_recibir)}")
+            
+            posibles_donantes = []
+            for donante in self.lista_pacientes:
+                if donante.grupo_sanguineo in puede_donar:
+                    posibles_donantes.append(donante)
+            
+            if posibles_donantes:
+                    print("Posibles donantes:")
+                    for donante in posibles_donantes[:3]:
+                        print(donante)
+                    else:
+                        print("No hay donantes compatibles.")
+            else:
+                print("Grupo sanguíneo no reconocido.")
+        else:
+            print("Paciente no encontrado.")
+#9. Salir. Terminará la ejecución del programa.
     def salir(self):
         """
         •	Descripción:

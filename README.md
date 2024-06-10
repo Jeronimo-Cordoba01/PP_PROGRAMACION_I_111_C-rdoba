@@ -22,3 +22,7 @@ donde el usuario interactua con nuestro sistema
  - Buscar un pacientes por el DNI
  - Calcular el promedio segun la elección
  - Salir del programa
+
+ ## :clapper: Video :clapper:
+
+ 

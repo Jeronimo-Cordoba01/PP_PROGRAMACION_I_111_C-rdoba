@@ -74,10 +74,63 @@ En caso de utilizar otro algoritmo de ordenamiento (Quick Sort, Merge Sort, etc)
 la forma en que el mismo trabaja. No se aceptará la utilización del método sort() de listas para realizar los ordenamientos.
 ● El uso de cualquier herramienta que no se haya visto en clases deberá ser justificado y defendido el día del 
 
-What if:
-Al iniciar el programa, se deberá leer el archivo Pacientes.csv para tener la lista de Pacientes actualizada.
-Al finalizar el programa (puede ser en la opción salir) se deberá actualizar el archivo Pacientes.csv, con los datos de los Pacientes.
-Los Pacientes que hayan sido dados de alta deberán guardarse en un archivo Json, llamado "Alta.json"
+Deberán cumplirse todas las condiciones establecidas en la parte 1.
+2° Parte - Agregar:
+    1. Al iniciarse el programa deberá cargarse automáticamente la información en memoria a partir del archivo “pacientes.csv” 
+    (Ud creará dicho archivo).
+    2. Al ingresar a la opción salir el programa deberá guardar automáticamente el listado de pacientes en el mismo archivo 
+    csv con los cambios que se hayan realizado. Si se realizó un ordenamiento a lo largo de la ejecución del programa, 
+    al salir, deberá guardar el listado con el último ordenamiento que se haya aplicado.
+    3. Deberá agregarse una opción al menú llamada “Determinar compartibilidad”, la misma pedirá el ingreso del dni de un paciente
+    y se encargará de mostrar cuáles son los grupos a los que un paciente puede donar y de los cuáles el paciente puede recibir
+    sangre (Ver tabla de compatibilidad). Por otro lado esta opción mostrará una lista con los primeros 3 donantes (si es que existen) 
+    que podrán donar sangre para el paciente en cuestión.
+    Compatibilidad Sanguínea
+
+    A+:
+    Puede donar a: A+, AB+
+    Puede recibir de: O+, O-, A+, A-
+    
+    A-:
+    Puede donar a: A+, A-, AB+, AB-
+    Puede recibir de: A-, O-
+    
+    B+:
+    Puede donar a: B+, AB+
+    Puede recibir de: O+, O-, B+, B-
+    
+    B-:
+    Puede donar a: B+, B-, AB+, AB-
+    Puede recibir de: B-, O-
+    
+    AB+:
+    Puede donar a: AB+
+    Puede recibir de: TODOS
+
+    AB-:
+    Puede donar a: AB+, AB-
+    Puede recibir de: AB-, O-, A-, B-
+    
+    O+:
+    Puede donar a: A+, B+, AB+, O+
+    Puede recibir de: O+, O-
+
+    O-:
+    Puede donar a: TODOS
+    Puede recibir de: O-
+Grabar un video (máximo 15 minutos) mostrando y explicando el código del parcial. Podrán seguir el siguiente guión a 
+efectos de organizar la defensa y el tiempo presupuestado del video:
+a. Mostrar el programa en tiempo de ejecución (3 min): ejecutar cada una de las opciones del CRUD y un ordenamiento. 
+Evidenciar que al momento de ingresar datos, el programa no rompe, ni tiene un comportamiento indebido (por ejemplo,
+si pedimos un número e ingresamos letras, el programa tiene que controlar ese comportamiento). 
+La demostración deberá evidenciar la lectura y escritura en archivos (punto 1 y 2 segunda parte) y determinar la compatibilidad de un
+paciente (punto 3 segunda parte).
+b. Mostrar y explicar las funciones del CRUD (7 min): deberán explicar (sin leer código, pero si mostrándolo) las funciones 
+principales del CRUD. Incluir en la explicación algunas funciones de validaciones, como por ejemplo la validación de
+un DNI, un nombre, etc. Hacer hincapié en la modularización de funciones, en cómo se comunican entre ellas 
+y la reutilización de las mismas.
+c. Mostrar y explicar las funciones de la segunda parte (5 min): lecto escritura de archivos y la lógica que pensaron 
+para el punto 3 (más allá que funcione o no).
 """
 
 from os import system
@@ -92,12 +145,13 @@ def mostrar_opciones_pacientes():
         "\nMenú de gestión de Pacientes: \n"
         "1. Dar de alta paciente. \n"
         "2. Modificar paciente. \n"
-        "3. Eliminar paciente. \n"
+        "3. Eliminar pacientes. \n"
         "4. Mostrar todos los pacientes. \n"
         "5. Ordenar pacientes. \n"
         "6. Buscar paciente por el DNI. \n"
         "7. Calcular promedio. \n"
-        "8. Salir. \n"
+        "8. Determinar compatibilidad. \n"
+        "9. Salir. \n"
     )
 
 def menu_principal(enfermero):
@@ -145,6 +199,8 @@ def menu_principal(enfermero):
             case "7":
                 enfermero.promedio()
             case "8":
+                enfermero.determinar_compatibilidad()
+            case "9":
                 enfermero.escribir_CSV("Pacientes.csv")
                 enfermero.escribir_JSON()
                 enfermero.salir()
