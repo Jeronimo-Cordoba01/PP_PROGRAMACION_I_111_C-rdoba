@@ -7,7 +7,6 @@ def iden_valido(mensaje):
     •	Verifica que la entrada sea un dígito (isdigit) y esté dentro del rango permitido.
     •	Si el usuario ingresa un identificador válido, la función retorna el valor como un entero.
     •	Si se exceden los 3 intentos, se imprime un mensaje de error y se retorna None.
-
     """
     reintentos = 0
     while reintentos < 3:
@@ -28,7 +27,6 @@ def nombre_apellido_valido(mensaje, minimo, maximo):
     •	Verifica que la longitud del texto esté dentro del rango permitido y que sea alfabético (isalpha).
     •	Si el usuario ingresa un nombre o apellido válido, la función retorna el texto.
     •	Si se exceden los 3 intentos, se imprime un mensaje de error y se retorna None.
-
     """
     reintentos = 0
     while reintentos < 3:

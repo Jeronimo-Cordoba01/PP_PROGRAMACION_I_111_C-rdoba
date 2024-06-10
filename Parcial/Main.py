@@ -119,7 +119,7 @@ def menu_principal(enfermero):
     o salir del programa.
     - Después de ejecutar cada acción, limpia la pantalla y pausa la ejecución para que el usuario pueda ver los resultados.
     """
-    enfermero = Enfermero()
+    enfermero = Enfermero([])
     enfermero.leer_CSV("Pacientes.csv")
     while True:
         system("cls")
@@ -162,5 +162,5 @@ if __name__ == "__main__":
     """
     Llamada al programa principal.
     """
-    enfermero = Enfermero()
+    enfermero = Enfermero([])
     menu_principal(enfermero)

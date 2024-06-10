@@ -5,7 +5,7 @@
 - Nombre: Jerónimo F.L. Córdoba
 - Division: 111-1
 
-## :skull: 1° Parcial - Programación I :skull:
+## :goberserk: 1° Parcial - Programación I :goberserk:
 ## :memo: Menu sobre los pacientes :memo:
 ![](Menu.png)
 
