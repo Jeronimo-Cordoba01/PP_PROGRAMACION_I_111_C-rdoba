@@ -2,12 +2,13 @@ import csv, json, random, datetime, os, re
 from Inputs import *
 from Pacientes import *
 from os import system
+
 # Función para leer el archivo CSV
 def leer_CSV(path: str = "Pacientes.csv") -> list:
     lista_pacientes = []
     try:
-        with open(path, 'r', encoding='utf-8') as archivo:
-            lineas = archivo.readlines()
+        with open(path, 'r', encoding='utf-8') as archivo_pacientes:
+            lineas = archivo_pacientes.readlines()
             encabezados = re.split(",|\n", lineas[0].strip())
             for linea in lineas[1:]:
                 registro = re.split(",|\n", linea.strip())
@@ -21,15 +22,18 @@ def leer_CSV(path: str = "Pacientes.csv") -> list:
         print(f"Error al leer el archivo: {e}")
     return lista_pacientes
 
-# Función para guardar en el archivo CSV
+# Función para guardar en el archivo CSV sin usar csv.DictWriter
 def guardar_CSV(pacientes: list, archivo: str = "Pacientes.csv"):
     try:
-        with open(archivo, 'w', encoding='utf-8', newline='') as file:
+        with open(archivo, 'w', encoding='utf-8', newline='') as archivo_pacientes:
             if pacientes:
-                encabezados = pacientes[0].keys()
-                writer = csv.DictWriter(file, fieldnames=encabezados)
-                writer.writeheader()
-                writer.writerows(pacientes)
+                encabezados = list(pacientes[0].keys())
+                archivo_pacientes.write(','.join(encabezados) + '\n')
+                for paciente in pacientes:
+                    linea = []
+                    for encabezado in encabezados:
+                        linea.append(str(paciente[encabezado]))
+                    archivo_pacientes.write(','.join(linea) + '\n')
             print("Datos guardados correctamente en el archivo CSV.")
     except IOError:
         print(f"No se pudo guardar el archivo {archivo}.")
@@ -37,8 +41,8 @@ def guardar_CSV(pacientes: list, archivo: str = "Pacientes.csv"):
 # Función para guardar en el archivo JSON
 def escribir_JSON(pacientes: list, archivo: str = "Alta.json"):
     try:
-        with open(archivo, "w", encoding="utf-8", newline='') as file:
-            json.dump(pacientes, file, indent=4)
+        with open(archivo, "w", encoding="utf-8", newline='') as archivo_alta:
+            json.dump(pacientes, archivo_alta, indent=4)
         print("Datos guardados correctamente en el archivo JSON.")
     except IOError:
         print("No se pudo guardar el archivo Alta.json.")
@@ -46,8 +50,8 @@ def escribir_JSON(pacientes: list, archivo: str = "Alta.json"):
 # Función para eliminar y registrar en JSON
 def eliminar_JSON(pacientes: list, dni: int, archivo_eliminados: str = "Muertos.json"):
     try:
-        with open(archivo_eliminados, "r", encoding='utf-8') as f:
-            pacientes_eliminados = json.load(f)
+        with open(archivo_eliminados, "r", encoding='utf-8') as archivo_muertos:
+            pacientes_eliminados = json.load(archivo_muertos)
     except FileNotFoundError:
         pacientes_eliminados = []
 
@@ -61,9 +65,8 @@ def eliminar_JSON(pacientes: list, dni: int, archivo_eliminados: str = "Muertos.
     if paciente_eliminado:
         pacientes_eliminados.append(paciente_eliminado)
         try:
-            with open(archivo_eliminados, "w", encoding='utf-8') as f:
-                json.dump(pacientes_eliminados, f, indent=4)
+            with open(archivo_eliminados, "w", encoding='utf-8') as archivo_muertos:
+                json.dump(pacientes_eliminados, archivo_muertos, indent=4)
         except IOError:
             print("Error al guardar los datos en el archivo JSON de pacientes eliminados.")
     return pacientes
-
