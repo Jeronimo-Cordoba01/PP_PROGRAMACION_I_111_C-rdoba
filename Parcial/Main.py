@@ -136,6 +136,7 @@ para el punto 3 (más allá que funcione o no).
 from os import system
 from Pacientes import *
 from Inputs import *
+from CSV_y_JSON import *
 
 def mostrar_opciones_pacientes():
     """
