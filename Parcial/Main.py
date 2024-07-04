@@ -139,9 +139,6 @@ from Inputs import *
 from CSV_y_JSON import *
 
 def mostrar_opciones_pacientes():
-    """
-    Muestra las opciones del menú de gestión de pacientes.  
-    """
     return (
         "\nMenú de gestión de Pacientes: \n"
         "1. Dar de alta paciente. \n"
@@ -156,30 +153,6 @@ def mostrar_opciones_pacientes():
     )
 
 def menu_principal(enfermero):
-    """
-    Descripción:
-    Implementa el menú principal del programa para la gestión de pacientes. Permite al usuario seleccionar diversas acciones 
-    relacionadas con la gestión de pacientes.
-
-    Argumentos:
-    - enfermero: Objeto de la clase Enfermero utilizado para llamar a funciones relacionadas con la gestión de pacientes.
-
-    Returns:
-    No devuelve ningún valor. Se encarga de mostrar el menú y ejecutar las acciones seleccionadas por el usuario.
-
-    Uso:
-    Llamar al inicio del programa para presentar al usuario las opciones disponibles y manejar la interacción principal 
-    del usuario con el sistema de gestión de pacientes.
-
-    Consideraciones:
-    - Utiliza un bucle infinito para mantener el programa en ejecución hasta que el usuario decida salir.
-    - Muestra el menú de opciones disponibles y maneja la entrada del usuario para determinar la acción a realizar.
-    - Llama a métodos del objeto `enfermero` para realizar acciones como ingresar, modificar o eliminar pacientes, 
-    mostrar la lista de pacientes, ordenarlos, buscar por DNI, calcular promedios, guardar datos en archivos CSV y JSON, 
-    o salir del programa.
-    - Después de ejecutar cada acción, limpia la pantalla y pausa la ejecución para que el usuario pueda ver los resultados.
-    """
-    enfermero.leer_CSV()
     while True:
         system("cls")
         print(mostrar_opciones_pacientes())
@@ -202,8 +175,8 @@ def menu_principal(enfermero):
             case "8":
                 enfermero.determinar_compatibilidad()
             case "9":
-                enfermero.escribir_CSV("Pacientes.csv")
-                enfermero.escribir_JSON()
+                guardar_CSV(enfermero.lista_pacientes, "Pacientes.csv")
+                escribir_JSON(enfermero.lista_pacientes, "Alta.json")
                 enfermero.salir()
                 return
             case _:
@@ -212,8 +185,6 @@ def menu_principal(enfermero):
         system("cls")
 
 if __name__ == "__main__":
-    """
-    Llamada al programa principal.
-    """
-    enfermero = Enfermero([])
+    lista_pacientes = leer_CSV("Pacientes.csv")
+    enfermero = Enfermero(lista_pacientes)
     menu_principal(enfermero)

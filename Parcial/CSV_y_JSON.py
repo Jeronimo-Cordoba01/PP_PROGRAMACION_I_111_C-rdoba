@@ -1,6 +1,4 @@
-import csv, json, random, datetime, os, re
-from Inputs import *
-from Pacientes import *
+import csv, json, re
 from os import system
 
 # Función para leer el archivo CSV

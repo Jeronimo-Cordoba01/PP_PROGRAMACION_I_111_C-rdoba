@@ -1,6 +1,6 @@
-import csv, json, random, datetime, os, re
+import csv, json, re
 from Inputs import *
-from os import system
+from CSV_y_JSON import *
 
 class Pacientes:
     """
@@ -66,7 +66,6 @@ class Enfermero:
     """
     def __init__(self, lista_pacientes: list[dict]):
         self.lista_pacientes = lista_pacientes 
-        self.leer_CSV("Pacientes.csv")
 
     def ingreso_pacientes(self):
         """
@@ -283,31 +282,44 @@ class Enfermero:
         Valor de Retorno
             No retorna un valor explícito, pero imprime mensajes informativos sobre el estado del ordenamiento al usuario.
         """ 
-        def bubble_sort(arr, key, ascendente=True):
-            num_pacientes = len(arr)
-            for pase in range(num_pacientes):
-                for posicion in range(0, num_pacientes - pase - 1):
-                    if ascendente:
-                        if arr[posicion].__dict__[key] > arr[posicion + 1].__dict__[key]:
-                            arr[posicion], arr[posicion + 1] = arr[posicion + 1], arr[posicion]
-                    else:
-                        if arr[posicion].__dict__[key] < arr[posicion + 1].__dict__[key]:
-                            arr[posicion], arr[posicion + 1] = arr[posicion + 1], arr[posicion]
+        def obtener_clave(paciente, tipo):
+            match tipo:
+                case "nombre":
+                    return paciente.nombre
+                case "apellido":
+                    return paciente.apellido
+                case "altura":
+                    return paciente.altura
+                case "grupo_sanguineo":
+                    return paciente.grupo_sanguineo
+                case _:
+                    raise ValueError("Tipo de ordenamiento inválido.")
 
-        def ordenar_por(tipo: str, ascendente: bool = True):
+        def quicksort(lista, tipo, bajo, alto, ascendente=True):
+            if bajo < alto:
+                pivote = obtener_clave(lista[alto], tipo)
+                i = bajo - 1
+                for j in range(bajo, alto):
+                    if ascendente:
+                        if obtener_clave(lista[j], tipo) <= pivote:
+                            i += 1
+                            lista[i], lista[j] = lista[j], lista[i]
+                    else:
+                        if obtener_clave(lista[j], tipo) >= pivote:
+                            i += 1
+                            lista[i], lista[j] = lista[j], lista[i]
+                lista[i + 1], lista[alto] = lista[alto], lista[i + 1]
+                indice_pivote = i + 1
+
+                quicksort(lista, tipo, bajo, indice_pivote - 1, ascendente)
+                quicksort(lista, tipo, indice_pivote + 1, alto, ascendente)
+
+        def ordenar_por(lista_pacientes, tipo: str, ascendente: bool = True):
+            if not lista_pacientes:
+                print("No hay pacientes para ordenar.")
+                return
             try:
-                match tipo:
-                    case "nombre":
-                        bubble_sort(self.lista_pacientes, "nombre", ascendente)
-                    case "apellido":
-                        bubble_sort(self.lista_pacientes, "apellido", ascendente)
-                    case "altura":
-                        bubble_sort(self.lista_pacientes, "altura", ascendente)
-                    case "grupo_sanguineo":
-                        bubble_sort(self.lista_pacientes, "grupo_sanguineo", ascendente)
-                    case _:
-                        print("Tipo de ordenamiento inválido.")
-                        return
+                quicksort(lista_pacientes, tipo, 0, len(lista_pacientes) - 1, ascendente)
                 print(f"Pacientes ordenados por {tipo} de forma {'ascendente' if ascendente else 'descendente'}.")
             except AttributeError as e:
                 print(f"Error en la ordenación: {e}")
@@ -318,15 +330,16 @@ class Enfermero:
         
         match opcion:
             case "1":
-                ordenar_por("nombre", ascendente)
+                ordenar_por(self.lista_pacientes, "nombre", ascendente)
             case "2":
-                ordenar_por("apellido", ascendente)
+                ordenar_por(self.lista_pacientes, "apellido", ascendente)
             case "3":
-                ordenar_por("altura", ascendente)
+                ordenar_por(self.lista_pacientes, "altura", ascendente)
             case "4":
-                ordenar_por("grupo_sanguineo", ascendente)
+                ordenar_por(self.lista_pacientes, "grupo_sanguineo", ascendente)
             case _:
                 print("Opción de ordenamiento inválida.")
+
     
 #6. Buscar paciente por DNI: Permitir al usuario buscar y mostrar la información de un paciente específico ingresando su DNI.
     def buscar_DNI(self, dni):
