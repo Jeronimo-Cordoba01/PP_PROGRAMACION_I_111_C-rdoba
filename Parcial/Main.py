@@ -1,9 +1,5 @@
 """
-nombre: Jerónimo 
-apellido: Córdoba
----
-1° Parcial
----
+Jerónimo Facundo Lucas Córdoba - 1° Parcial 
 Enunciado:
 Se necesita realizar un programa para la administración de pacientes en una clínica privada que permita interactuar únicamente a través de la consola. 
 El mismo deberá realizarse utilizando Python 3, aplicando los contenidos y reglas de estilo dados en esta cátedra.
@@ -39,7 +35,41 @@ Mostrará un submenú para seleccionar qué datos modificar. Deberá indicarse s
     a. Edad.
     b. Altura.
     c. Peso.
-8. Salir. Terminará la ejecución del programa.
+8. Determinar compartibilidad: la misma pedirá el ingreso del dni de un paciente y se encargará de mostrar cuáles son los grupos a los que un paciente puede donar 
+y de los cuáles el paciente puede recibir sangre (Ver tabla de compatibilidad). Por otro lado esta opción mostrará una lista con los primeros 3 donantes 
+(si es que existen) que podrán donar sangre para el paciente en cuestión. Compatibilidad Sanguínea:
+    A+:
+    Puede donar a: A+, AB+
+    Puede recibir de: O+, O-, A+, A-
+    
+    A-:
+    Puede donar a: A+, A-, AB+, AB-
+    Puede recibir de: A-, O-
+    
+    B+:
+    Puede donar a: B+, AB+
+    Puede recibir de: O+, O-, B+, B-
+    
+    B-:
+    Puede donar a: B+, B-, AB+, AB-
+    Puede recibir de: B-, O-
+    
+    AB+:
+    Puede donar a: AB+
+    Puede recibir de: TODOS
+
+    AB-:
+    Puede donar a: AB+, AB-
+    Puede recibir de: AB-, O-, A-, B-
+    
+    O+:
+    Puede donar a: A+, B+, AB+, O+
+    Puede recibir de: O+, O-
+
+    O-:
+    Puede donar a: TODOS
+    Puede recibir de: O-
+9. Salir. Terminará la ejecución del programa.
 
 2)Validaciones:
 Todos los ingresos de datos por consola deberán estar validados.
@@ -81,43 +111,6 @@ Deberán cumplirse todas las condiciones establecidas en la parte 1.
     2. Al ingresar a la opción salir el programa deberá guardar automáticamente el listado de pacientes en el mismo archivo 
     csv con los cambios que se hayan realizado. Si se realizó un ordenamiento a lo largo de la ejecución del programa, 
     al salir, deberá guardar el listado con el último ordenamiento que se haya aplicado.
-    3. Deberá agregarse una opción al menú llamada “Determinar compartibilidad”, la misma pedirá el ingreso del dni de un paciente
-    y se encargará de mostrar cuáles son los grupos a los que un paciente puede donar y de los cuáles el paciente puede recibir
-    sangre (Ver tabla de compatibilidad). Por otro lado esta opción mostrará una lista con los primeros 3 donantes (si es que existen) 
-    que podrán donar sangre para el paciente en cuestión.
-    Compatibilidad Sanguínea
-
-    A+:
-    Puede donar a: A+, AB+
-    Puede recibir de: O+, O-, A+, A-
-    
-    A-:
-    Puede donar a: A+, A-, AB+, AB-
-    Puede recibir de: A-, O-
-    
-    B+:
-    Puede donar a: B+, AB+
-    Puede recibir de: O+, O-, B+, B-
-    
-    B-:
-    Puede donar a: B+, B-, AB+, AB-
-    Puede recibir de: B-, O-
-    
-    AB+:
-    Puede donar a: AB+
-    Puede recibir de: TODOS
-
-    AB-:
-    Puede donar a: AB+, AB-
-    Puede recibir de: AB-, O-, A-, B-
-    
-    O+:
-    Puede donar a: A+, B+, AB+, O+
-    Puede recibir de: O+, O-
-
-    O-:
-    Puede donar a: TODOS
-    Puede recibir de: O-
 Grabar un video (máximo 15 minutos) mostrando y explicando el código del parcial. Podrán seguir el siguiente guión a 
 efectos de organizar la defensa y el tiempo presupuestado del video:
 a. Mostrar el programa en tiempo de ejecución (3 min): ejecutar cada una de las opciones del CRUD y un ordenamiento. 

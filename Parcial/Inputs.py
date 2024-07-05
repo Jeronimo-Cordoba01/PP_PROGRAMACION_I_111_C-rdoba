@@ -134,7 +134,7 @@ def grupo_sanguineo_valida(mensaje):
     print("Demasiados intentos fallidos.")
     return None
 
-def alta():
+def alta(): #Para usar en la consigna 1
     """
     Este es un submenú para dar de alta un paciente.
     """
@@ -142,7 +142,7 @@ def alta():
     print("1. Sí")
     print("2. No")
     
-def seguro():
+def seguro(): #Para usar en la consigna 1
     """
     Este es un submenú para confirmar una acción.
     """
@@ -150,7 +150,7 @@ def seguro():
     print("1. Sí")
     print("2. No")
     
-def menu_ordenar():
+def menu_ordenar(): #Para usar en la consigna 5
     """
     Este es un submenú para ordenar los datos de un paciente.
     """
@@ -161,12 +161,12 @@ def menu_ordenar():
     print("4. Grupo sanguíneo")
     print("5. Salir")
     
-def menu_ordenar_tipo():
+def menu_ordenar_tipo(): #Para usar en la consigna 5
     print("En qué campo desea ordenar:")
     print("Ascendente")
     print("Descendente")
     
-def menu_promedio():
+def menu_promedio(): #Para usar en la consigna 7
     """
     Este es un submenú para calcular el promedio de los datos de los pacientes.
     """
