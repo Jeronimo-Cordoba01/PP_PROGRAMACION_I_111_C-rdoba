@@ -1,31 +1,9 @@
-import csv, json, re
+import csv, json, re, os
 from Inputs import *
-from CSV_y_JSON import *
 
-class Pacientes:
-    """
-    La clase Pacientes es una representación de un paciente individual y contiene varios atributos que describen su información personal y médica.
-    Constructor (__init__):
-    •	Parámetros:
-        o	iden (int): Identificador único del paciente.
-        o	nombre (str): Nombre del paciente.
-        o	apellido (str): Apellido del paciente.
-        o	edad (int): Edad del paciente.
-        o	altura (int): Altura del paciente en centímetros.
-        o	peso (float): Peso del paciente en kilogramos.
-        o	dni (int): Número de documento nacional de identidad (DNI) del paciente.
-        o	grupo_sanguineo (str): Grupo sanguíneo del paciente.
-    •	Acciones:
-        o	Inicializa los atributos del objeto Pacientes con los valores proporcionados.
-    Método __str__:
-    •	Descripción:
-        o	Devuelve una representación en cadena del objeto Pacientes, que incluye todos sus atributos.
-    •	Retorno:
-        o	Una cadena que contiene el identificador, nombre, apellido, edad, altura, peso, DNI y grupo sanguíneo del paciente.
-
-    """
-    def __init__(self, iden: int, nombre: str, apellido: str, edad: int, altura: int, peso: float, dni: int, grupo_sanguineo: str):
-        self.iden = iden
+class Paciente:
+    def __init__(self, id, nombre, apellido, edad, altura, peso, dni, grupo_sanguineo):
+        self.id = id
         self.nombre = nombre
         self.apellido = apellido
         self.edad = edad
@@ -33,448 +11,309 @@ class Pacientes:
         self.peso = peso
         self.dni = dni
         self.grupo_sanguineo = grupo_sanguineo
-        
+
     def __str__(self):
-        return f"{self.iden} {self.nombre} {self.apellido} {self.edad} {self.altura} {self.peso} {self.dni} {self.grupo_sanguineo}"
-    
-    
-class Enfermero:
-    """
-    La clase Enfermero contiene métodos para administrar pacientes, como ingresar nuevos pacientes, buscar pacientes por DNI, 
-    modificar información de pacientes, eliminar pacientes, mostrar información de pacientes 
-    y realizar otras operaciones relacionadas con pacientes.
-    Constructor (__init__):
-    •	Acciones:
-        o	Inicializa la lista de pacientes vacía.
-        o	Lee el archivo CSV de pacientes (Pacientes.csv) al instanciar un objeto de la clase Enfermero.
-    Método ingreso_pacientes:
-    •	Descripción:
-        o	Permite al usuario ingresar información para un nuevo paciente.
-        o	Valida la entrada de datos utilizando funciones de validación proporcionadas por el módulo Inputs.py.
-        o	Agrega el nuevo paciente a la lista de pacientes si la entrada es válida.
-    •	Acciones:
-        o	Solicita al usuario ingresar información para un nuevo paciente, incluyendo identificador, nombre, apellido, edad, altura, peso, DNI y grupo sanguíneo.
-        o	Utiliza funciones de validación del módulo Inputs.py para validar la entrada de datos.
-        o	Crea un nuevo objeto Pacientes con la información ingresada.
-        o	Agrega el nuevo paciente a la lista de pacientes.
-        o	Imprime un mensaje indicando si el paciente fue ingresado correctamente.
-        o	Llama al método escribir_JSON() para escribir la lista actualizada de pacientes en un archivo JSON.
-    Otros Métodos:
-    •	buscar_DNI: Busca un paciente por su DNI en la lista de pacientes.
-    •	Otros métodos no incluidos en la sección de código proporcionada podrían incluir operaciones como modificar pacientes, eliminar pacientes, mostrar todos los pacientes y realizar otras operaciones relacionadas con pacientes.
+        return f"{self.nombre} {self.apellido}, DNI: {self.dni}, Edad: {self.edad}, Altura: {self.altura} cm, Peso: {self.peso} kg, Grupo Sanguíneo: {self.grupo_sanguineo}"
 
-    """
-    def __init__(self, lista_pacientes: list[dict]):
-        self.lista_pacientes = lista_pacientes 
+class Doctores:
+    def __init__(self):
+        self.lista_pacientes = []
+        self.cargar_pacientes()
 
-    def ingreso_pacientes(self):
-        """
-        Ingresa un nuevo paciente. Valida que los datos sean correctos llamando desde "Inputs.py" a las funciones correspondientes. 
-        Luego, agrega el paciente a la lista de Pacientes. Si el paciente ya existe, imprime un mensaje de error. 
-        """
-        
-        iden = iden_valida("Ingrese el identificador del paciente: ")
-        if not iden:
-            print("Identificador inválido. Operación cancelada.")
-            return
-        
-        nombre = nombre_apellido_valida("Ingrese el nombre del paciente: ", 3, 20).capitalize()
-        if not nombre:
-            print("Nombre inválido. Operación cancelada.")
-            return
+    def cargar_pacientes(self):
+        try:
+            self.lista_pacientes = leer_pacientes_csv("Pacientes.csv")
+        except FileNotFoundError:
+            self.lista_pacientes = []
+        except Exception as e:
+            print(f"Error al cargar pacientes: {e}")
 
-        apellido = nombre_apellido_valida("Ingrese el apellido del paciente: ", 3, 20).capitalize()
-        if not apellido:
-            print("Apellido inválido. Operación cancelada.")
-            return
+    def guardar_pacientes(self):
+        try:
+            guardar_pacientes_csv('Pacientes.csv', self.lista_pacientes)
+        except Exception as e:
+            print(f"Error al guardar pacientes: {e}")
 
-        edad = edad_valida("Ingrese la edad del paciente: ")
-        if not edad:
-            print("Edad inválida. Operación cancelada.")
-            return
+#1. Dar de alta. Pedirá los datos necesarios y dará de alta a un nuevo paciente, asignando un ID único autoincremental. 
+    def dar_de_alta(self):
+        id = len(self.lista_pacientes) + 1
+        prompts = [
+            ("Ingrese el nombre: ", nombre_apellido_valida),
+            ("Ingrese el apellido: ", nombre_apellido_valida),
+            ("Ingrese la edad: ", edad_valida),
+            ("Ingrese la altura en cm: ", altura_valida),
+            ("Ingrese el peso en kg: ", peso_valida),
+            ("Ingrese el DNI: ", dni_valida),
+            ("Ingrese el grupo sanguíneo: ", grupo_sanguineo_valida)
+        ]
 
-        altura = altura_valida("Ingrese la altura del paciente: ")
-        if not altura:
-            print("Altura inválida. Operación cancelada.")
-            return
-
-        peso = peso_valida("Ingrese el peso del paciente: ")
-        if not peso:
-            print("Peso inválido. Operación cancelada.")
-            return
-
-        dni = dni_valida("Ingrese el dni del paciente: ")
-        if not dni:
-            print("DNI inválido. Operación cancelada.")
-            return
-
-        grupo_sanguineo = grupo_sanguineo_valida("Ingrese el grupo sanguíneo del paciente: ")
-        if not grupo_sanguineo:
-            print("Grupo sanguíneo inválido. Operación cancelada.")
-            return
-
-        paciente = Pacientes(iden, nombre, apellido, edad, altura, peso, dni, grupo_sanguineo)
-        self.lista_pacientes.append(paciente)
-        self.escribir_CSV("Pacientes.csv")
-
-        print("Paciente ingresado correctamente.")
-        
-
-    def generar_identificador(self) -> int:
-        """
-        •	Descripción:
-            o	Este método se encarga de generar un identificador único para un nuevo paciente.
-            o	Recorre la lista de pacientes para encontrar el identificador más alto actualmente en uso.
-            o	Incrementa este identificador en uno para generar un nuevo identificador único.
-        •	Parámetros:
-            o	No recibe parámetros explícitos, pero accede a la lista de pacientes almacenada en el objeto Enfermero.
-        •	Valor de Retorno:
-            o	Retorna un entero que representa el identificador generado para un nuevo paciente.
-        """
-        id_autoincremental = 0
-        for paciente in self.lista_pacientes:
-            if paciente.iden > id_autoincremental:
-                id_autoincremental = paciente.iden
-        return id_autoincremental + 1
-
-    def buscar_DNI(self, dni):
-        """
-        •	Descripción:
-            o	Este método busca un paciente en la lista de pacientes por su número de documento nacional de identidad (DNI).
-            o	Recorre la lista de pacientes y compara el DNI de cada paciente con el DNI proporcionado como argumento.
-        •	Parámetros:
-            o	dni (int): El número de DNI que se utilizará para buscar al paciente.
-        •	Valor de Retorno:
-            o	Retorna el objeto Pacientes correspondiente al paciente encontrado si se encuentra un paciente con el DNI proporcionado.
-            o	Retorna None si no se encuentra ningún paciente con el DNI especificado.
-
-        """
-        for paciente in self.lista_pacientes:
-            if paciente.dni == dni:
-                return paciente
-        return None
-        
-#1. Dar de alta. Pedira los datos necesarios y dará de alta a un nuevo paciente, asignando un ID autoincremental.
-    def dar_alta(self) -> bool:
-        """
-        Propósito
-            El método dar_alta es responsable de agregar un nuevo paciente a la lista de pacientes después de verificar 
-            que el paciente no está ya registrado mediante su DNI.
-        Argumentos:
-            self: Referencia a la instancia de la clase que contiene la lista de pacientes y métodos auxiliares.
-        Retorno:
-            bool: Retorna True si el paciente se registra exitosamente, False en caso contrario (ya registrado o se cancela el alta).
-        """
-        id_autoincremental = self.generar_identificador()
-        
-        dni = dni_valida("Ingrese el DNI del paciente: ")
-        for paciente in self.lista_pacientes:
-            if paciente.dni == dni:
-                print("El paciente ya está registrado.")
-                return False
-        
-        alta()
-        
-        opcion = input("Opción: ").strip()
-        if opcion == "1":
-            self.ingreso_pacientes(id_autoincremental)
-            return True
-        elif opcion == "2":
-            print("No se realizó el alta del paciente.")
-            return False
-        else:
-            print("Opción inválida.")
-            return False
-#2. Modificar. Permitira alterar cualquier dato del paciente excepto su ID. Se usará el DNI para identificar al paciente a modificar
-    def modificar_paciente(self):
-        """
-        Propósito:
-            Permite modificar los datos de un paciente existente en la lista de pacientes, identificado mediante su DNI.
-        
-        Argumentos:
-            self: Referencia a la instancia de la clase que contiene la lista de pacientes y métodos auxiliares.
-        
-        Valor de Retorno:
-            No retorna un valor explícito, pero imprime mensajes para informar al usuario sobre el resultado de la operación.
-        """
-        dni = dni_valida("Ingrese el DNI del paciente a modificar: ")
-        paciente = self.buscar_DNI(dni)
-        
-        if paciente:
-            print("Datos actuales del paciente:")
-            print(paciente)
-                
-            opcion = input("Opción:  1. Modificar.  2. Cancelar.").strip()
-            if opcion == "1":
-                print("Ingrese los nuevos datos del paciente:")
-                nombre = nombre_apellido_valida("Ingrese el nombre del paciente: ", 3, 20).capitalize()
-                apellido = nombre_apellido_valida("Ingrese el apellido del paciente: ", 3, 20).capitalize()
-                edad = edad_valida("Ingrese la edad del paciente: ")
-                altura = altura_valida("Ingrese la altura del paciente: ")
-                peso = peso_valida("Ingrese el peso del paciente: ")
-                grupo_sanguineo = grupo_sanguineo_valida("Ingrese el grupo sanguíneo del paciente: ")
-                
-                paciente.nombre = nombre
-                paciente.apellido = apellido
-                paciente.edad = edad
-                paciente.altura = altura
-                paciente.peso = peso
-                paciente.grupo_sanguineo = grupo_sanguineo
-                
-                print("Paciente modificado correctamente.")
-            elif opcion == "2":
-                print("Modificación cancelada.")
-        else:
-            print("No se encontró ningún paciente con el DNI proporcionado.")
-#3. Eliminar. Eliminará permanentemente a un paciente del listado original. Se pedira el DNI del paciente a eliminar.            
-    def eliminar_paciente(self):
-        """
-        Propósito:
-            Eliminar un paciente de la lista de pacientes, identificado mediante su DNI, después de obtener la confirmación del usuario.
-        Argumentos:
-            self: Referencia a la instancia de la clase que contiene la lista de pacientes y métodos auxiliares.
-        Retorno:
-            No retorna un valor explícito, pero imprime mensajes para informar al usuario sobre el resultado de la operación.
-        """
-        dni = dni_valida("Ingrese el DNI del paciente a eliminar: ")
-        paciente = self.buscar_DNI(dni)
-        
-        if paciente:
-            opcion = input("Opción:  1. Eliminar.  2. Cancelar.").strip()
-            if opcion == "1":
-                self.lista_pacientes.remove(paciente)
-                print("Paciente eliminado correctamente.")
-                self.eliminar_JSON(paciente.iden)
-            elif opcion == "2":
-                print("Eliminación cancelada.")
-        else:
-            print("Paciente no encontrado.")
-        
-#4. Mostrar todos los pacientes.                
-    def mostrar_todosLos_pacientes(self):
-        """
-        Propósito:
-            Mostrar una lista de todos los pacientes almacenados en el archivo Pacientes.csv.
-        Argumentos:
-            self: Referencia a la instancia de la clase que contiene métodos auxiliares y posiblemente atributos de la clase.
-        Valor de Retorno:
-            No retorna un valor explícito, pero imprime la lista de pacientes al usuario.
-        """
-        if not self.lista_pacientes:
-            print("No hay pacientes para mostrar.")
-            return
-        
-        print("*****************************************************************************************")
-        print("| Nombre | Apellido | Edad | Altura | Peso | DNI | Grupo sanguíneo |")
-        print("-----------------------------------------------------------------------------------------")
-        for paciente in self.lista_pacientes:
-            print(f"| {paciente.nombre} | {paciente.apellido} | {paciente.edad} | {paciente.altura} cm | {paciente.peso} kg | {paciente.dni} | {paciente.grupo_sanguineo} |")
-        print("*****************************************************************************************")
-        
-#5. Ordenar pacientes. Ofrecer la opción de ordenar y mostrar la lista de pacientes de forma ascendente o descendente por: 
-    def Ordenar(self):
-        """
-        Función:
-            Proporcionar una funcionalidad para ordenar la lista de pacientes según diversos criterios 
-            (nombre, apellido, altura, grupo sanguíneo) en orden ascendente o descendente, basada en la entrada del usuario.
-        Argumentos
-            self: Referencia a la instancia de la clase que contiene la lista de pacientes y métodos auxiliares.
-        Valor de Retorno
-            No retorna un valor explícito, pero imprime mensajes informativos sobre el estado del ordenamiento al usuario.
-        """ 
-        def obtener_clave(paciente, tipo):
-            match tipo:
-                case "nombre":
-                    return paciente.nombre
-                case "apellido":
-                    return paciente.apellido
-                case "altura":
-                    return paciente.altura
-                case "grupo_sanguineo":
-                    return paciente.grupo_sanguineo
-                case _:
-                    raise ValueError("Tipo de ordenamiento inválido.")
-
-        def quicksort(lista, tipo, bajo, alto, ascendente=True):
-            if bajo < alto:
-                pivote = obtener_clave(lista[alto], tipo)
-                i = bajo - 1
-                for j in range(bajo, alto):
-                    if ascendente:
-                        if obtener_clave(lista[j], tipo) <= pivote:
-                            i += 1
-                            lista[i], lista[j] = lista[j], lista[i]
-                    else:
-                        if obtener_clave(lista[j], tipo) >= pivote:
-                            i += 1
-                            lista[i], lista[j] = lista[j], lista[i]
-                lista[i + 1], lista[alto] = lista[alto], lista[i + 1]
-                indice_pivote = i + 1
-
-                quicksort(lista, tipo, bajo, indice_pivote - 1, ascendente)
-                quicksort(lista, tipo, indice_pivote + 1, alto, ascendente)
-
-        def ordenar_por(lista_pacientes, tipo: str, ascendente: bool = True):
-            if not lista_pacientes:
-                print("No hay pacientes para ordenar.")
+        datos = []
+        for prompt, funcion in prompts:
+            dato = funcion(prompt)
+            if dato is None:
+                print("Error al ingresar los datos del paciente. Por favor, intente nuevamente.")
                 return
-            try:
-                quicksort(lista_pacientes, tipo, 0, len(lista_pacientes) - 1, ascendente)
-                print(f"Pacientes ordenados por {tipo} de forma {'ascendente' if ascendente else 'descendente'}.")
-            except AttributeError as e:
-                print(f"Error en la ordenación: {e}")
+            datos.append(dato)
 
-        menu_ordenar()
-        opcion = input("Selecciona una opción de ordenamiento: ").strip()
-        ascendente = input("Orden ascendente (s/n): ").strip().lower() == 's'
-        
-        match opcion:
-            case "1":
-                ordenar_por(self.lista_pacientes, "nombre", ascendente)
-            case "2":
-                ordenar_por(self.lista_pacientes, "apellido", ascendente)
-            case "3":
-                ordenar_por(self.lista_pacientes, "altura", ascendente)
-            case "4":
-                ordenar_por(self.lista_pacientes, "grupo_sanguineo", ascendente)
-            case _:
-                print("Opción de ordenamiento inválida.")
+        nombre, apellido, edad, altura, peso, dni, grupo_sanguineo = datos
+        paciente = Paciente(id, nombre, apellido, edad, altura, peso, dni, grupo_sanguineo)
+        self.lista_pacientes.append(paciente)
+        self.guardar_pacientes()
+        print("Paciente dado de alta exitosamente.")
 
-    
-#6. Buscar paciente por DNI: Permitir al usuario buscar y mostrar la información de un paciente específico ingresando su DNI.
-    def buscar_DNI(self, dni):
-        """
-        Descripción:
-            Busca un paciente por su DNI en la lista de pacientes.
-        Argumentos:
-            dni (int): El número de DNI que se utilizará para buscar al paciente.
-        Retorno:
-            Retorna el objeto Pacientes correspondiente al paciente encontrado si se encuentra un paciente con el DNI proporcionado.
-            Retorna None si no se encuentra ningún paciente con el DNI especificado.
-        """
+#2. Modificar. Permitirá alterar cualquier dato del paciente excepto su ID. Se usará el DNI para identificar al paciente a modificar
+    def modificar(self):
+        dni = dni_valida("Ingrese el DNI del paciente a modificar: ")
         for paciente in self.lista_pacientes:
             if paciente.dni == dni:
-                return paciente
-        return None
+                print(f"Paciente encontrado: {paciente}")
+                print("Seleccione el dato a modificar:")
+                print("1. Nombre")
+                print("2. Apellido")
+                print("3. Edad")
+                print("4. Altura")
+                print("5. Peso")
+                print("6. Grupo sanguíneo")
+                opcion = input("Opción: ").strip()
 
-    def mostrar_paciente_por_DNI(self):
-        """
-        Descripción:
-            Permite al usuario buscar y mostrar información detallada de un paciente específico en la lista de pacientes 
-            usando su DNI (Documento Nacional de Identidad).
-        Argumentos:
-            self: Referencia a la instancia de la clase que contiene la lista de pacientes y métodos auxiliares.
-        Retorno:
-            No retorna un valor explícito, pero imprime información del paciente encontrado o un mensaje de error si no se encuentra.
-        """
-        dni = dni_valida("Ingrese el DNI del paciente a buscar: ")
-        paciente = self.buscar_DNI(dni)
-        
-        if paciente:
-            print("Paciente encontrado:")
-            print(paciente)
-        else:
-            print("Paciente no encontrado.")
-    
-#7 calcular promedio: Mostrar un submenú que permita calcular y mostrar el promedio de:
-    def promedio(self):
-        """
-        Propósito:
-            Calcular y mostrar los promedios de edad, altura y peso de los pacientes registrados en la lista de pacientes.
-        Argumentos:
-            self: Referencia a la instancia de la clase que contiene la lista de pacientes.
-        Valor de Retorno:
-            No retorna un valor explícito, pero imprime los promedios calculados de edad, altura y peso de los pacientes.
-        """
+                if opcion == "1":
+                    paciente.nombre = nombre_apellido_valida("Ingrese el nuevo nombre: ")
+                elif opcion == "2":
+                    paciente.apellido = nombre_apellido_valida("Ingrese el nuevo apellido: ")
+                elif opcion == "3":
+                    paciente.edad = edad_valida("Ingrese la nueva edad: ")
+                elif opcion == "4":
+                    paciente.altura = altura_valida("Ingrese la nueva altura en cm: ")
+                elif opcion == "5":
+                    paciente.peso = peso_valida("Ingrese el nuevo peso en kg: ")
+                elif opcion == "6":
+                    paciente.grupo_sanguineo = grupo_sanguineo_valida("Ingrese el nuevo grupo sanguíneo: ")
+                else:
+                    print("Opción inválida.")
+                    return
+
+                self.guardar_pacientes()
+                print("Datos del paciente actualizados.")
+                return
+
+        print("Paciente no encontrado.")
+
+#3. Eliminar. Eliminará permanentemente a un paciente del listado original. Se pedirá el DNI del paciente a eliminar.
+    def eliminar(self):
+        dni = dni_valida("Ingrese el DNI del paciente a eliminar: ")
+        for paciente in self.lista_pacientes:
+            if paciente.dni == dni:
+                self.lista_pacientes.remove(paciente)
+                self.guardar_pacientes()
+                print("Paciente eliminado.")
+                return
+
+        print("Paciente no encontrado.")
+
+#4. Mostrar todos. Imprimirá por consola la información de todos los pacientes
+    def mostrar_todos(self):
         if not self.lista_pacientes:
             print("No hay pacientes registrados.")
             return
 
-        tipo = input("Ingrese el tipo de promedio a calcular (edad, altura, peso): ").strip().lower()
-        
-        suma = 0
-        total = len(self.lista_pacientes)
-        
+        print("*****************************************************************************************")
+        print("| Nombre | Apellido | Edad | Altura | Peso | DNI | Grupo sanguíneo |")
+        print("—------------------------------------------------------------------------------------------------")
         for paciente in self.lista_pacientes:
-            match tipo:
-                case "edad":
-                    suma += paciente.edad
-                case "altura":
-                    suma += paciente.altura
-                case "peso":
-                    suma += paciente.peso
-                case _:
-                    print("Tipo de promedio no válido.")
-                    return
-        
-        promedio = suma / total
-        if tipo == "edad":
-            print(f"Promedio de edad de los pacientes: {promedio}")
-        elif tipo == "altura":
-            print(f"Promedio de altura de los pacientes: {promedio} cm")
-        elif tipo == "peso":
-            print(f"Promedio de peso de los pacientes: {promedio} kg")
-        
-        
-#8. Mostrar todos los pacientes: Mostrar una lista de todos los pacientes almacenados en el archivo Pacientes.csv.
+            print(f"| {paciente.nombre} | {paciente.apellido} | {paciente.edad} | {paciente.altura} cm | {paciente.peso} kg | {paciente.dni} | {paciente.grupo_sanguineo} |")
+        print("*****************************************************************************************")
+
+#5. Ordenar pacientes. Ofrecer la opción de ordenar y mostrar la lista de pacientes de forma ascendente o descendente por:
+    def bubble_sort(self, lista_pacientes:list[Paciente], campo:str, ascendente: bool = True):
+        for i in range(0, len(lista_pacientes)-1):
+            for j in range(i+1, len(lista_pacientes)):
+                
+                    if campo == "nombre":
+                        a, b = lista_pacientes[i].nombre , lista_pacientes[j].nombre
+                    elif campo == "apellido":
+                        a, b = lista_pacientes[i].apellido , lista_pacientes[j].apellido
+                    elif campo == "altura":
+                        a, b = lista_pacientes[i].altura , lista_pacientes[j].altura
+                    elif campo == "grupo_sanguineo":
+                        a, b = lista_pacientes[i].grupo_sanguineo , lista_pacientes[j].grupo_sanguineo
+                    if ascendente:
+                        if a < b:
+                            lista_pacientes[i], lista_pacientes[j] = lista_pacientes[j],lista_pacientes[i]
+                    else:
+                        if a > b:
+                            lista_pacientes[i], lista_pacientes[j] = lista_pacientes[j], lista_pacientes[i]
+                            
+    def ordenar_pacientes(self):
+        if not self.lista_pacientes:
+            print("No hay pacientes registrados.")
+            return
+
+        print("Seleccione el criterio de ordenamiento:")
+        print("1. Nombre")
+        print("2. Apellido")
+        print("3. Altura")
+        print("4. Grupo sanguíneo")
+        opcion = input("Opción: ").strip()
+
+        match opcion:
+            case "1":
+                campo = "nombre"
+            case "2":
+                campo = "apellido"
+            case "3":
+                campo = "altura"
+            case "4":
+                campo = "grupo_sanguineo"
+            case _:
+                print("Opción inválida.")
+                return
+
+        orden = menu_ordenar_tipo()
+        if orden == "1":
+            self.bubble_sort(self.lista_pacientes, campo, ascendente=True)
+        elif orden == "2":
+            self.bubble_sort(self.lista_pacientes, campo, ascendente=False)
+        else:
+            print("Opción de orden inválida.")
+            return
+
+        self.guardar_pacientes()
+        self.mostrar_todos()
+
+
+#6. Buscar paciente por DNI: Permitir al usuario buscar y mostrar la información de un paciente específico ingresando su DNI.
+    def buscar_paciente_por_dni(self):
+        dni = dni_valida("Ingrese el DNI del paciente a buscar: ")
+        for paciente in self.lista_pacientes:
+            if paciente.dni == dni:
+                print(paciente)
+                return
+
+        print("Paciente no encontrado.")
+
+#7. Calcular promedio:
+    def calcular_promedio(self):
+        if not self.lista_pacientes:
+            print("No hay pacientes registrados.")
+            return
+
+        print("Seleccione el promedio a calcular:")
+        print("1. Edad")
+        print("2. Altura")
+        print("3. Peso")
+        opcion = input("Opción: ").strip()
+
+        total = 0
+
+        match opcion:
+            case "1":
+                for paciente in self.lista_pacientes:
+                    total += paciente.edad
+                promedio = total / len(self.lista_pacientes)
+                print(f"El promedio de edad es: {promedio:.2f} años")
+            case "2":
+                for paciente in self.lista_pacientes:
+                    total += paciente.altura
+                promedio = total / len(self.lista_pacientes)
+                print(f"El promedio de altura es: {promedio:.2f} cm")
+            case "3":
+                for paciente in self.lista_pacientes:
+                    total += paciente.peso
+                promedio = total / len(self.lista_pacientes)
+                print(f"El promedio de peso es: {promedio:.2f} kg")
+            case _:
+                print("Opción inválida.")
+
+
+#8. Determinar compatibilidad:
     def determinar_compatibilidad(self):
-        """
-        Descripción:
-            Determina la compatibilidad entre dos grupos sangineos.
-        Argumentos:
-            self: Referencia a la instancia de la clase que contiene la lista de pacientes y métodos auxiliares.
-        Retorno:
-            No retorna un valor explícito, pero imprime la compatibilidad entre los dos grupos sangineos.
-        """
         dni = dni_valida("Ingrese el DNI del paciente: ")
-        paciente = self.buscar_DNI(dni)
-        
-        if paciente:
-            compatibilidad = {
-                "A+": {"Donar": ["A+", "AB+"], "Recibir": ["O+", "O-", "A+", "A-"]},
-                "A-": {"Donar": ["A-", "AB-"], "Recibir": ["O-", "O+", "A-", "A+"]},
-                "B+": {"Donar": ["B+", "AB+"], "Recibir": ["O+", "O-", "B+", "B-"]},
-                "B-": {"Donar": ["B-", "AB-"], "Recibir": ["O-", "O+", "B-", "B+"]},
-                "AB+": {"Donar": ["AB+", "O+"], "Recibir": ["O+", "O-", "AB+", "AB-"]},
-                "AB-": {"Donar": ["AB-", "O-"], "Recibir": ["O-", "O+", "AB-", "AB+"]},
-                "O+": {"Donar": ["O+", "AB+"], "Recibir": ["O+", "O-", "A+", "A-", "B+", "B-", "AB+", "AB-"]},
-                "O-": {"Donar": ["O-", "AB-"], "Recibir": ["O-", "O+", "A-", "A+", "B-", "B+", "AB-", "AB+"]},                
-            }
-            
-        grupo_compatible = paciente.grupo_sanguineo
-        
-        if grupo_compatible in compatibilidad:
-            puede_donar = compatibilidad[grupo_compatible]["Donar"]
-            puede_recibir = compatibilidad[grupo_compatible]["Recibir"]
-            
-            print(f"El paciente {paciente} puede donar a: {', '.join(puede_donar)}")
-            print(f"El paciente {paciente} puede recibir de: {', '.join(puede_recibir)}")
-            
-            posibles_donantes = []
-            for donante in self.lista_pacientes:
-                if donante.grupo_sanguineo in puede_donar:
-                    posibles_donantes.append(donante)
-            
-            if posibles_donantes:
-                    print("Posibles donantes:")
-                    for donante in posibles_donantes[:3]:
-                        print(donante)
+        for paciente in self.lista_pacientes:
+            if paciente.dni == dni:
+                compatibilidad = {
+                    "A+": {"Donar": ["A+", "AB+"], "Recibir": ["O+", "O-", "A+", "A-"]},
+                    "A-": {"Donar": ["A+", "A-", "AB+", "AB-"], "Recibir": ["A-", "O-"]},
+                    "B+": {"Donar": ["B+", "AB+"], "Recibir": ["O+", "O-", "B+", "B-"]},
+                    "B-": {"Donar": ["B+", "B-", "AB+", "AB-"], "Recibir": ["B-", "O-"]},
+                    "AB+": {"Donar": ["AB+"], "Recibir": ["TODOS"]},
+                    "AB-": {"Donar": ["AB+", "AB-"], "Recibir": ["AB-", "O-", "A-", "B-"]},
+                    "O+": {"Donar": ["A+", "B+", "AB+", "O+"], "Recibir": ["O+", "O-"]},
+                    "O-": {"Donar": ["TODOS"], "Recibir": ["O-"]}
+                }
+                grupo_sanguineo = paciente.grupo_sanguineo
+                if grupo_sanguineo in compatibilidad:
+                    puede_donar = compatibilidad[grupo_sanguineo]["Donar"]
+                    puede_recibir = compatibilidad[grupo_sanguineo]["Recibir"]
+
+                    print(f"El paciente {paciente} puede donar a: {', '.join(puede_donar)}")
+                    print(f"El paciente {paciente} puede recibir de: {', '.join(puede_recibir)}")
+
+                    posibles_donantes = []
+                    for donante in self.lista_pacientes:
+                        if donante.grupo_sanguineo in puede_recibir:
+                            posibles_donantes.append(donante)
+
+                    if posibles_donantes:
+                        print("Posibles donantes:")
+                        for donante in posibles_donantes[:3]:
+                            print(donante)
                     else:
                         print("No hay donantes compatibles.")
-            else:
-                print("Grupo sanguíneo no reconocido.")
-        else:
-            print("Paciente no encontrado.")
-#9. Salir. Terminará la ejecución del programa.
-    def salir(self):
-        """
-        •	Descripción:
-            o	Este método terminará la ejecución del programa.
-            o	Simplemente muestra un mensaje de despedida y finaliza la ejecución del programa.
-        •	Valor de Retorno:
-            o	None: No hay valor de retorno explícito, ya que este método simplemente termina la ejecución del programa.
+                else:
+                    print("Grupo sanguíneo no reconocido.")
+                return
+        print("Paciente no encontrado.")
 
-        """
-        
+
+#9. Salir. Terminar la ejecución del programa.
+    def salir(self):
         print("Gracias por usar el sistema. ¡Hasta pronto!")
+        self.guardar_pacientes()
         return
+#########################################################################################################################################################
+#CSV Y JSON
+def leer_pacientes_csv(file_path):
+    pacientes = []
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            lines = file.readlines()
+            for line in lines:
+                data = line.strip().split(',')
+                paciente = {
+                    "id": int(data[0]),
+                    "nombre": data[1],
+                    "apellido": data[2],
+                    "edad": int(data[3]),
+                    "altura": int(data[4]),
+                    "peso": float(data[5]),
+                    "dni": data[6],
+                    "grupo_sanguineo": data[7]
+                }
+                pacientes.append(paciente)
+    except Exception as e:
+        print(f"Error al leer el archivo CSV: {e}")
+    return pacientes
+
+def guardar_pacientes_csv(file_path, pacientes):
+    try:
+        with open(file_path, 'w', encoding='utf-8') as file:
+            for paciente in pacientes:
+                line = f'{paciente["id"]},{paciente["nombre"]},{paciente["apellido"]},{paciente["edad"]},{paciente["altura"]},{paciente["peso"]},{paciente["dni"]},{paciente["grupo_sanguineo"]}\n'
+                file.write(line)
+    except Exception as e:
+        print(f"Error al guardar el archivo CSV: {e}")
+
+def leer_pacientes_json(file_path):
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            return json.load(file)
+    except Exception as e:
+        print(f"Error al leer el archivo JSON: {e}")
+        return []
+
+def guardar_pacientes_json(file_path, pacientes):
+    try:
+        with open(file_path, 'w', encoding='utf-8') as file:
+            json.dump(pacientes, file, indent=4)
+    except Exception as e:
+        print(f"Error al guardar el archivo JSON: {e}")

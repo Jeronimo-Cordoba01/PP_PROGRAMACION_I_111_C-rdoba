@@ -161,6 +161,11 @@ def menu_ordenar():
     print("4. Grupo sanguíneo")
     print("5. Salir")
     
+def menu_ordenar_tipo():
+    print("En qué campo desea ordenar:")
+    print("Ascendente")
+    print("Descendente")
+    
 def menu_promedio():
     """
     Este es un submenú para calcular el promedio de los datos de los pacientes.

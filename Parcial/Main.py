@@ -134,9 +134,7 @@ para el punto 3 (más allá que funcione o no).
 """
 
 from os import system
-from Pacientes import *
-from Inputs import *
-from CSV_y_JSON import *
+from Pacientes import Doctores
 
 def mostrar_opciones_pacientes():
     return (
@@ -159,24 +157,22 @@ def menu_principal(enfermero):
         opcion = input("Selecciona una opción: ")
         match opcion:
             case "1":
-                enfermero.dar_alta()
+                enfermero.dar_de_alta()
             case "2":
-                enfermero.modificar_paciente()
+                enfermero.modificar()
             case "3":
-                enfermero.eliminar_paciente()
+                enfermero.eliminar()
             case "4":
-                enfermero.mostrar_todosLos_pacientes()
+                enfermero.mostrar_todos()
             case "5":
-                enfermero.Ordenar()
+                enfermero.ordenar_pacientes()
             case "6":
-                enfermero.mostrar_paciente_por_DNI()
+                enfermero.buscar_paciente_por_dni()
             case "7":
-                enfermero.promedio()
+                enfermero.calcular_promedio()
             case "8":
                 enfermero.determinar_compatibilidad()
             case "9":
-                guardar_CSV(enfermero.lista_pacientes, "Pacientes.csv")
-                escribir_JSON(enfermero.lista_pacientes, "Alta.json")
                 enfermero.salir()
                 return
             case _:
@@ -185,6 +181,6 @@ def menu_principal(enfermero):
         system("cls")
 
 if __name__ == "__main__":
-    lista_pacientes = leer_CSV("Pacientes.csv")
-    enfermero = Enfermero(lista_pacientes)
+    enfermero = Doctores()
     menu_principal(enfermero)
+
