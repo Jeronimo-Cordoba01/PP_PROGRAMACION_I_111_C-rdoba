@@ -127,9 +127,13 @@ para el punto 3 (más allá que funcione o no).
 """
 
 from os import system
-from Pacientes import Doctores
+from Pacientes import Enfermero
+from Inputs import *
 
 def mostrar_opciones_pacientes():
+    """
+    Muestra las opciones del menú de gestión de pacientes.  
+    """
     return (
         "\nMenú de gestión de Pacientes: \n"
         "1. Dar de alta paciente. \n"
@@ -150,19 +154,19 @@ def menu_principal(enfermero):
         opcion = input("Selecciona una opción: ")
         match opcion:
             case "1":
-                enfermero.dar_de_alta()
+                enfermero.dar_alta()
             case "2":
-                enfermero.modificar()
+                enfermero.modificar_paciente()
             case "3":
-                enfermero.eliminar()
+                enfermero.eliminar_paciente()
             case "4":
-                enfermero.mostrar_todos()
+                enfermero.mostrar_todosLos_pacientes()
             case "5":
-                enfermero.ordenar_pacientes()
+                enfermero.Ordenar()
             case "6":
-                enfermero.buscar_paciente_por_dni()
+                enfermero.mostrar_paciente_por_DNI()
             case "7":
-                enfermero.calcular_promedio()
+                enfermero.promedio()
             case "8":
                 enfermero.determinar_compatibilidad()
             case "9":
@@ -174,6 +178,5 @@ def menu_principal(enfermero):
         system("cls")
 
 if __name__ == "__main__":
-    enfermero = Doctores()
+    enfermero = Enfermero([])
     menu_principal(enfermero)
-

@@ -24,7 +24,3 @@ donde el usuario interactua con nuestro sistema
  - Salir del programa
 
  ## :clapper: Video :clapper:
-
- - 1: Interacción con el menu principal: https://youtu.be/tL2oFk3VgHY
- - 2: Explicación de validación y CRUD: https://youtu.be/UtBUpFtYWE0
- - 3: Nuevas funciones: https://youtu.be/WlaRvGxzOkg
