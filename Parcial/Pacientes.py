@@ -37,7 +37,6 @@ class Pacientes:
     def __str__(self):
         return f"{self.iden} {self.nombre} {self.apellido} {self.edad} {self.altura} {self.peso} {self.dni} {self.grupo_sanguineo}"
     
-    
 class Enfermero:
     """
     La clase Enfermero contiene métodos para administrar pacientes, como ingresar nuevos pacientes, buscar pacientes por DNI, 
@@ -73,6 +72,8 @@ class Enfermero:
         Ingresa un nuevo paciente. Valida que los datos sean correctos llamando desde "Inputs.py" a las funciones correspondientes. 
         Luego, agrega el paciente a la lista de Pacientes. Si el paciente ya existe, imprime un mensaje de error. 
         """
+        
+        iden = self.generar_identificador()
         
         iden = iden_valida("Ingrese el identificador del paciente: ")
         if not iden:
@@ -120,7 +121,6 @@ class Enfermero:
 
         print("Paciente ingresado correctamente.")
         
-
     def generar_identificador(self) -> int:
         """
         •	Descripción:
@@ -179,6 +179,7 @@ class Enfermero:
         opcion = input("Opción: ").strip()
         if opcion == "1":
             self.ingreso_pacientes(id_autoincremental)
+            self.escribir_JSON()
             return True
         elif opcion == "2":
             print("No se realizó el alta del paciente.")
@@ -245,7 +246,7 @@ class Enfermero:
             if opcion == "1":
                 self.lista_pacientes.remove(paciente)
                 print("Paciente eliminado correctamente.")
-                self.eliminar_JSON(paciente.iden)
+                self.eliminar_JSON(paciente.dni)
             elif opcion == "2":
                 print("Eliminación cancelada.")
         else:
@@ -305,6 +306,8 @@ class Enfermero:
                         bubble_sort(self.lista_pacientes, "altura", ascendente)
                     case "grupo_sanguineo":
                         bubble_sort(self.lista_pacientes, "grupo_sanguineo", ascendente)
+                    case "salir":
+                        return
                     case _:
                         print("Tipo de ordenamiento inválido.")
                         return
@@ -326,24 +329,9 @@ class Enfermero:
             case "4":
                 ordenar_por("grupo_sanguineo", ascendente)
             case _:
-                print("Opción de ordenamiento inválida.")
+                print("Opción inválida.")
     
 #6. Buscar paciente por DNI: Permitir al usuario buscar y mostrar la información de un paciente específico ingresando su DNI.
-    def buscar_DNI(self, dni):
-        """
-        Descripción:
-            Busca un paciente por su DNI en la lista de pacientes.
-        Argumentos:
-            dni (int): El número de DNI que se utilizará para buscar al paciente.
-        Retorno:
-            Retorna el objeto Pacientes correspondiente al paciente encontrado si se encuentra un paciente con el DNI proporcionado.
-            Retorna None si no se encuentra ningún paciente con el DNI especificado.
-        """
-        for paciente in self.lista_pacientes:
-            if paciente.dni == dni:
-                return paciente
-        return None
-
     def mostrar_paciente_por_DNI(self):
         """
         Descripción:
@@ -461,11 +449,10 @@ class Enfermero:
             o	None: No hay valor de retorno explícito, ya que este método simplemente termina la ejecución del programa.
 
         """
-        
         print("Gracias por usar el sistema. ¡Hasta pronto!")
         return
         
-    #Aca lee el CSV
+#Aca lee el CSV
     def leer_CSV(self, path: str = "Pacientes.csv") -> list:
         """
         Propósito: 
@@ -498,7 +485,7 @@ class Enfermero:
         except csv.Error as e:
             print(f"Error al leer el archivo CSV: {e}")
 
-    #Guarda la lista de objetos en el CSV
+#Guarda la lista de objetos en el CSV
     def guardar_CSV(self, pacientes: list, archivo: str):
         """
         Propósito:
@@ -519,7 +506,7 @@ class Enfermero:
         except IOError:
             print(f"No se pudo guardar el archivo {archivo}.")
                     
-    #Escribe la lista de objetos en el CSV
+#Escribe la lista de objetos en el CSV
     def escribir_CSV(self, archivo: str):
         """
         Propósito:
@@ -550,7 +537,7 @@ class Enfermero:
         except IOError:
             print(f"No se pudo guardar el archivo {archivo}.")
 
-    #Dar de alta en JSON
+#Dar de alta en JSON
     def escribir_JSON(self):
         """
         Propósito:
@@ -585,7 +572,7 @@ class Enfermero:
         except IOError:
             print("No se pudo guardar el archivo Alta.json.")
             
-    #Eliminar en JSON
+#Eliminar en JSON
     def eliminar_JSON(self, id_paciente: int):
         """
         Propósito:
@@ -601,7 +588,7 @@ class Enfermero:
         try:
             with open("Muertos.json", "r") as f:
                 pacientes_eliminados = json.load(f)
-        except FileNotFoundError:
+        except (FileNotFoundError, json.JSONDecodeError):
             pacientes_eliminados = []
 
         for paciente in self.lista_pacientes:
@@ -610,9 +597,7 @@ class Enfermero:
                 self.lista_pacientes.remove(paciente)
                 break
 
-        try:
-            with open("Muertos.json", "w") as f:
-                json.dump(pacientes_eliminados, f, indent=4)
-        except IOError:
-            print("Error al guardar los datos en el archivo JSON de pacientes eliminados.")
+        with open("Muertos.json", "w") as f:
+            json.dump(pacientes_eliminados, f, indent=4)
+
             
