@@ -145,6 +145,7 @@ def mostrar_opciones_pacientes():
         "7. Calcular promedio. \n"
         "8. Determinar compatibilidad. \n"
         "9. Salir. \n"
+        "0. Mostrar Matriz. \n"
     )
 
 def menu_principal(enfermero):
@@ -172,6 +173,8 @@ def menu_principal(enfermero):
             case "9":
                 enfermero.salir()
                 return
+            case "0":
+                enfermero.mostrar_matriz()
             case _:
                 print("Opción no válida. Inténtalo de nuevo.")
         system("pause")

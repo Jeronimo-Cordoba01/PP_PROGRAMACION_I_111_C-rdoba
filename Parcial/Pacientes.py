@@ -452,6 +452,25 @@ class Enfermero:
         print("Gracias por usar el sistema. ¡Hasta pronto!")
         return
         
+#0. Mostrar Matriz
+    def crear_matriz():
+        return [
+            ["A+", 10, 4],
+            ["A-", 5, 3],
+            ["B+", 3, 9],
+            ["B-", 2, 8],
+            ["AB+", 8, 2],
+            ["AB-", 7, 3],
+            ["O+", 4, 10],
+            ["O-", 1, 5],
+        ]
+        
+    def mostrar_matriz(self):
+        self.matriz = self.crear_matriz()
+        print(f"{'Tipo':<3} {'Donar':<5} {'Recibir':<7}")
+        for fila in self.matriz:
+            tipo, donar, recibir = fila
+            print(f"{tipo:<3} {donar:<5} {recibir:<7}")
 #Aca lee el CSV
     def leer_CSV(self, path: str = "Pacientes.csv") -> list:
         """
